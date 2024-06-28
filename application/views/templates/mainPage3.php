@@ -327,13 +327,15 @@
                             break; // Exit the loop once a match is found
                         endif;
                     endforeach;
+                    $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($aduanItem->KODKEROSKAN);
+                    $keteranganDetail = $this->aduan_model->getKeteranganDetailName($aduanItem->KODDETAIL);
                     ?>
                     <tr class="text-center">
                         <td><?= $no++ ?></td>
                         <td><?= $namaProjek ?></td>
                         <td><?= $aduanItem->NoAduan ?></td>
-                        <td><?= $aduanItem->KODKEROSKAN ?></td>
-                        <td><?= $aduanItem->KODDETAIL ?></td>
+                        <td><?= $jenisKerosakan ?></td>
+                        <td><?= $keteranganDetail ?></td>
                         <td><?= $aduanItem->TajukAduan ?></td>
                         <td>
                             <?php
@@ -409,13 +411,15 @@
                             break; // Exit the loop once a match is found
                         endif;
                     endforeach;
+                    $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($aduanItem->KODKEROSKAN);
+                    $keteranganDetail = $this->aduan_model->getKeteranganDetailName($aduanItem->KODDETAIL);
                     ?>
                     <tr class="text-center">
                         <td><?= $no++ ?></td>
                         <td><?= $namaProjek ?></td>
                         <td><?= $aduanItem->NoAduan ?></td>
-                        <td><?= $aduanItem->KODKEROSKAN ?></td>
-                        <td><?= $aduanItem->KODDETAIL ?></td>
+                        <td><?= $jenisKerosakan ?></td>
+                        <td><?= $keteranganDetail ?></td>
                         <td><?= $aduanItem->TajukAduan ?></td>
                         <td>
                             <?php

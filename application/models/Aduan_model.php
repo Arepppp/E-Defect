@@ -62,6 +62,29 @@ class Aduan_model extends CI_Model
         return $query->result();
     }
 
+    // Example method in your model to fetch jenis kerosakan name
+    public function getJenisKerosakanName($kodKeroskan)
+    {
+        // Perform a query to get the name from your kerosakan table based on $kodKeroskan
+        $query = $this->db->select('JENISKEROSAKAN')->from('kerosakan')->where('KODKEROSKAN', $kodKeroskan)->get();
+        if ($query->num_rows() > 0) {
+            return $query->row()->JENISKEROSAKAN;
+        } else {
+            return 'Unknown Jenis Kerosakan'; // Handle if no matching record found
+        }
+    }
+
+    // Example method to fetch keterangan detail name
+    public function getKeteranganDetailName($kodDetail)
+    {
+        // Query to get the name from detail_kerosakan table based on $kodDetail
+        $query = $this->db->select('KETERANGANDETAIL')->from('detail_kerosakan')->where('KODDETAIL', $kodDetail)->get();
+        if ($query->num_rows() > 0) {
+            return $query->row()->KETERANGANDETAIL;
+        } else {
+            return 'Unknown Keterangan Detail'; // Handle if no matching record found
+        }
+    }
 
     public function delete($where, $table)
     {

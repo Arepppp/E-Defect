@@ -200,23 +200,20 @@ class Aduan extends CI_Controller
     {
         $this->_rules2();
 
-        if ($this->form_validation->run() == false) {
-            redirect('aduan/error');
-        } else {
-            date_default_timezone_set('Asia/Kuala_Lumpur');
-            $data = array(
-                'NoAduan' => $this->input->post('noAduan'),
-                'JenisAduan' => $this->input->post('jenisAduan'),
-                'TajukAduan' => $this->input->post('tajukAduan'),
-                'Keterangan' => $this->input->post('keterangan'),
-                'StatusAduan' => $this->input->post('statusAduan'),
-                'TarikhStatusDikemaskini' => date('Y-m-d H:i:s'),
-            );
+        date_default_timezone_set('Asia/Kuala_Lumpur');
+        $data = array(
+            'NoAduan' => $this->input->post('noAduan'),
+            'JenisAduan' => $this->input->post('jenisAduan'),
+            'TajukAduan' => $this->input->post('tajukAduan'),
+            'Keterangan' => $this->input->post('keterangan'),
+            'StatusAduan' => $this->input->post('statusAduan'),
+            'TarikhStatusDikemaskini' => date('Y-m-d H:i:s'),
+        );
 
-            $this->aduan_model->update_data($data, 'aduan');
-            $this->session->set_flashdata('pesan', '<div class="alert alert-warning alert-dismissible fade show" role="alert">Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-            redirect('juruteknik/index');
-        }
+        $this->aduan_model->update_data($data, 'aduan');
+        $this->session->set_flashdata('pesan', '<div class="alert alert-warning alert-dismissible fade show" role="alert">Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+        redirect('juruteknik/index');
+
     }
 
     public function edit2($NoAduan)

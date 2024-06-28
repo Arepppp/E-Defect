@@ -244,7 +244,6 @@
         <thead>
             <tr class="text-center">
                 <th>No</th>
-                <th>No Aduan</th>
                 <th>Nama Projek</th>
                 <th>Jenis Aduan</th>
                 <th>Jenis Kerosakan</th>
@@ -269,14 +268,15 @@
                     break; // Exit the loop once a match is found
                 endif;
             endforeach;
+            $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($aduanItem->KODKEROSKAN);
+            $keteranganDetail = $this->aduan_model->getKeteranganDetailName($aduanItem->KODDETAIL);
             ?>
             <tbody>
                 <tr class="text-center <?= $aduanItem->StatusAduan == 'Sedang Disemak' ? 'highlight' : '' ?>">
                     <td><?= $no++ ?></td>
-                    <td><?= $aduanItem->NoAduan ?></td>
                     <td><?= $namaProjek ?></td>
-                    <td><?= $aduanItem->KODKEROSKAN ?></td>
-                    <td><?= $aduanItem->KODDETAIL ?></td>
+                    <td><?= $jenisKerosakan ?></td>
+                    <td><?= $keteranganDetail ?></td>
                     <td><?= $aduanItem->TajukAduan ?></td>
                     <td>
                         <?php

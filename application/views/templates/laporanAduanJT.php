@@ -99,15 +99,19 @@
 </head>
 
 <body>
-    <button class="back-button" onclick="window.location.href='http://localhost:8080/e-DefectTest/juruteknik/index'">Back</button>
+    <button class="back-button"
+        onclick="window.location.href='http://localhost:8080/e-DefectTest/juruteknik/index'">Back</button>
     <div class="details-container">
         <h2>Details for Aduan No <?= $details['aduan']->NoAduan ?></h2>
+        <?php 
+        $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($details['aduan']->KODKEROSKAN);
+        $keteranganDetail = $this->aduan_model->getKeteranganDetailName($details['aduan']->KODDETAIL); 
+        ?>
+        <label>Jenis Aduan:</label>
+        <p><?= $jenisKerosakan ?></p>
 
-        <label>Kod Kerosakan:</label>
-        <p><?= $details['aduan']->KODKEROSKAN ?></p>
-
-        <label>Kod Detail Kerosakan:</label>
-        <p><?= $details['aduan']->KODDETAIL ?></p>
+        <label>Jenis Kerosakan:</label>
+        <p><?= $keteranganDetail ?></p>
 
         <label>Tajuk Aduan:</label>
         <p><?= $details['aduan']->TajukAduan ?></p>
