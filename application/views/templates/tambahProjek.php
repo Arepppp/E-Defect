@@ -12,7 +12,8 @@
             margin: 0;
             padding: 0;
             position: relative;
-            padding-top: 40px; /* Ensure space for the button at the top */
+            padding-top: 40px;
+            /* Ensure space for the button at the top */
         }
 
         .sidenav {
@@ -81,7 +82,8 @@
         input[type="date"],
         select,
         input[type="file"] {
-            width: calc(100% - 22px); /* Adjusted to account for padding and borders */
+            width: calc(100% - 22px);
+            /* Adjusted to account for padding and borders */
             padding: 10px;
             box-sizing: border-box;
             margin-bottom: 15px;
@@ -131,7 +133,8 @@
             position: fixed;
             top: 10px;
             left: 10px;
-            z-index: 1000; /* Ensure it's above other content */
+            z-index: 1000;
+            /* Ensure it's above other content */
         }
 
         button.back-button:hover {
@@ -242,7 +245,15 @@
             <label>Kontraktor Projek:</label><br>
             <select name="IdKontraktor" id="IdKontraktor" class="form-control">
                 <option value="">Pilih Kontraktor Projek</option>
-                <?php foreach ($kontraktor_list as $kontraktor): ?>
+                <?php
+                // Filter the kontraktor list to include only those with STATUSKONTRAKTOR == 'aktif'
+                $filtered_kontraktor_list = array_filter($kontraktor_list, function ($kontraktor) {
+                    return $kontraktor['STATUSKONTRAKTOR'] !== 'Tidak Aktif';
+                });
+
+                // Iterate over the filtered kontraktor list
+                foreach ($filtered_kontraktor_list as $kontraktor):
+                    ?>
                     <option value="<?= $kontraktor['IDKONTRAKTOR']; ?>"><?= $kontraktor['NAMASYARIKAT']; ?></option>
                 <?php endforeach; ?>
             </select>
@@ -252,27 +263,43 @@
             <label>Perunding Projek 1:</label><br>
             <select name="IdPerunding1" id="IdPerunding1" class="form-control">
                 <option value="">Pilih Perunding Projek</option>
-                <?php foreach ($perunding_list as $perunding): ?>
+                <?php
+                // Filter the perunding list to exclude those with STATUSPERUNDING == 'Tidak Aktif'
+                $filtered_perunding_list = array_filter($perunding_list, function ($perunding) {
+                    return $perunding['STATUSPERUNDING'] !== 'Tidak Aktif';
+                });
+
+                // Iterate over the filtered perunding list
+                foreach ($filtered_perunding_list as $perunding):
+                    ?>
                     <option value="<?= $perunding['IDPERUNDING']; ?>"><?= $perunding['NAMASYARIKAT']; ?></option>
                 <?php endforeach; ?>
             </select>
             <?= form_error('IdPerunding1', '<div class="text-small text-danger">', '</div>'); ?>
         </div>
+
         <div class="form-group">
             <label>Perunding Projek 2:</label><br>
             <select name="IdPerunding2" id="IdPerunding2" class="form-control">
                 <option value="">Pilih Perunding Projek</option>
-                <?php foreach ($perunding_list as $perunding): ?>
+                <?php
+                // Use the same filtered perunding list for consistency
+                foreach ($filtered_perunding_list as $perunding):
+                    ?>
                     <option value="<?= $perunding['IDPERUNDING']; ?>"><?= $perunding['NAMASYARIKAT']; ?></option>
                 <?php endforeach; ?>
             </select>
             <?= form_error('IdPerunding2', '<div class="text-small text-danger">', '</div>'); ?>
         </div>
+
         <div class="form-group">
             <label>Perunding Projek 3:</label><br>
             <select name="IdPerunding3" id="IdPerunding3" class="form-control">
                 <option value="">Pilih Perunding Projek</option>
-                <?php foreach ($perunding_list as $perunding): ?>
+                <?php
+                // Use the same filtered perunding list for consistency
+                foreach ($filtered_perunding_list as $perunding):
+                    ?>
                     <option value="<?= $perunding['IDPERUNDING']; ?>"><?= $perunding['NAMASYARIKAT']; ?></option>
                 <?php endforeach; ?>
             </select>

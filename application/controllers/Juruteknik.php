@@ -33,44 +33,61 @@ class Juruteknik extends CI_Controller
 		$data['user_name'] = $this->juruteknik_model->get_user_name($idjt);
 		$data['projek'] = $this->projek_model->get_projek_for_juruteknik($idjt)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_JT($idjt);
+
 		$data['aduan'] = $this->aduan_model->get_aduan_from_projek($data['noprojek']);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage2', $data);
 	}
+
 	public function index2()
 	{
 		$idjt = $this->session->userdata('id');
 		$data['user_name'] = $this->juruteknik_model->get_user_name($idjt);
 		$data['projek'] = $this->projek_model->get_projek_for_juruteknik($idjt)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_JT($idjt);
-		$data['aduan'] = $this->aduan_model->get_aduan_from_date($data['noprojek']);
+
+		$date = date('Y-m-d'); // Example date, you can change this to any date you need
+		$data['aduan'] = $this->aduan_model->get_aduan_from_date($data['noprojek'], $date);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage2', $data);
 	}
+
 	public function index3()
 	{
 		$idjt = $this->session->userdata('id');
 		$data['user_name'] = $this->juruteknik_model->get_user_name($idjt);
 		$data['projek'] = $this->projek_model->get_projek_for_juruteknik($idjt)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_JT($idjt);
+
 		$data['aduan'] = $this->aduan_model->get_aduan_tak_siap($data['noprojek']);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage2', $data);
 	}
+
 	public function index4()
 	{
 		$idjt = $this->session->userdata('id');
 		$data['user_name'] = $this->juruteknik_model->get_user_name($idjt);
 		$data['projek'] = $this->projek_model->get_projek_for_juruteknik($idjt)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_JT($idjt);
+
 		$data['aduan'] = $this->aduan_model->get_aduan_siap($data['noprojek']);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage2', $data);
 	}
+
 
 
 }

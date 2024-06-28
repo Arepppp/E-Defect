@@ -85,9 +85,45 @@ class Projek_model extends CI_Model
         $this->db->insert($table, $data);
     }
 
-    public function update_data($data, $table)
+    public function insert($data, $table)
     {
-        $this->db->where('NoProjek', $data['NoProjek']);
+        // Insert the rest of the data
+        $this->db->insert($table, $data);
+    }
+
+    public function update_SA($data, $table)
+    {
+        $this->db->where('IdSA', $data['IdSA']);
+        $this->db->update($table, $data);
+    }
+    public function update_JT($data, $table)
+    {
+        $this->db->where('IdJT', $data['IdJT']);
+        $this->db->update($table, $data);
+    }
+    public function update_APTJ($data, $table)
+    {
+        $this->db->where('IdAPTJ', $data['IdAPTJ']);
+        $this->db->update($table, $data);
+    }
+    public function update_Perunding($data, $table)
+    {
+        $this->db->where('IDPERUNDING', $data['IDPERUNDING']);
+        $this->db->update($table, $data);
+    }
+    public function update_Kontraktor($data, $table)
+    {
+        $this->db->where('IDKONTRAKTOR', $data['IDKONTRAKTOR']);
+        $this->db->update($table, $data);
+    }
+    public function update_Kerosakan($data, $table)
+    {
+        $this->db->where('KODKEROSKAN', $data['KODKEROSKAN']);
+        $this->db->update($table, $data);
+    }
+    public function update_Detail($data, $table)
+    {
+        $this->db->where('KODDETAIL', $data['KODDETAIL']);
         $this->db->update($table, $data);
     }
 
@@ -98,7 +134,8 @@ class Projek_model extends CI_Model
         $this->db->update('Projek');
     }
 
-    public function update_status($NoProjek, $StatusProjek) {
+    public function update_status($NoProjek, $StatusProjek)
+    {
         $this->db->set('StatusProjek', $StatusProjek);
         $this->db->where('NoProjek', $NoProjek);
         return $this->db->update('projek');
@@ -137,16 +174,22 @@ class Projek_model extends CI_Model
         $this->db->select('NoProjek');
         $this->db->where('IdJT', $idjt);
         $query = $this->db->get('projek');
-        return $query->row('NoProjek');
+
+        $result = $query->result_array();
+        return array_column($result, 'NoProjek');
     }
+
 
     public function getNoProjek_APTJ($idaptj)
     {
         $this->db->select('NoProjek');
         $this->db->where('IdAPTJ', $idaptj);
         $query = $this->db->get('projek');
-        return $query->row('NoProjek');
+
+        $result = $query->result_array();
+        return array_column($result, 'NoProjek');
     }
+
 
     public function get_all_kontraktor()
     {
@@ -157,6 +200,22 @@ class Projek_model extends CI_Model
     public function get_all_perunding()
     {
         $query = $this->db->get('perunding'); //table name is 'perunding'
+        return $query->result_array();
+    }
+
+    public function get_all_sa()
+    {
+        $query = $this->db->get('superadmin'); //table name is 'superadmin'
+        return $query->result_array();
+    }
+    public function get_all_kerosakan()
+    {
+        $query = $this->db->get('kerosakan'); //table name is 'kerosakan'
+        return $query->result_array();
+    }
+    public function get_all_detail_kerosakan()
+    {
+        $query = $this->db->get('detail_kerosakan'); //table name is 'detail_kerosakan'
         return $query->result_array();
     }
 }

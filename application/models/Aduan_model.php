@@ -3,44 +3,65 @@
 class Aduan_model extends CI_Model
 {
     // Get all aduan for a specific projek
+    // Get aduan from specific projects
     public function get_aduan_from_projek($projekid)
     {
         $this->db->select('*');
-        $this->db->where('NoProjek', $projekid);
-        $this->db->order_by('NoAduan', 'DESC'); // Add order by clause
+        if (is_array($projekid)) {
+            $this->db->where_in('NoProjek', $projekid);
+        } else {
+            $this->db->where('NoProjek', $projekid);
+        }
+        $this->db->order_by('NoAduan', 'DESC');
         $query = $this->db->get('aduan');
         return $query->result();
     }
 
-    // Get aduan for a specific projek from today's date
-    public function get_aduan_from_date($projekid)
+    // Get aduan from specific projects on a particular date
+    public function get_aduan_from_date($projekid, $date)
     {
         $this->db->select('*');
-        $this->db->where('NoProjek', $projekid);
-        $this->db->where('DATE(TarikhAduan)', date('Y-m-d')); // Use DATE function for comparison
+        if (is_array($projekid)) {
+            $this->db->where_in('NoProjek', $projekid);
+        } else {
+            $this->db->where('NoProjek', $projekid);
+        }
+        $this->db->where('DATE(TarikhAduan)', $date);
         $this->db->order_by('NoAduan', 'DESC');
-        return $this->db->get('aduan')->result();
+        $query = $this->db->get('aduan');
+        return $query->result();
     }
 
-    // Get aduan that are not completed for a specific projek
+    // Get unfinished aduan from specific projects
     public function get_aduan_tak_siap($projekid)
     {
         $this->db->select('*');
-        $this->db->where('NoProjek', $projekid);
-        $this->db->where_not_in('StatusAduan', ['Siap Dibaiki', 'Aduan Batal']);
-        $this->db->order_by('NoAduan', 'DESC'); // Add order by clause
-        return $this->db->get('aduan')->result();
+        if (is_array($projekid)) {
+            $this->db->where_in('NoProjek', $projekid);
+        } else {
+            $this->db->where('NoProjek', $projekid);
+        }
+        $this->db->where('StatusAduan !=', 'Siap Dibaiki');
+        $this->db->order_by('NoAduan', 'DESC');
+        $query = $this->db->get('aduan');
+        return $query->result();
     }
 
-    // Get aduan that are completed for a specific projek
+    // Get finished aduan from specific projects
     public function get_aduan_siap($projekid)
     {
         $this->db->select('*');
-        $this->db->where('NoProjek', $projekid);
-        $this->db->where_in('StatusAduan', ['Siap Dibaiki', 'Aduan Batal']);
-        $this->db->order_by('NoAduan', 'DESC'); // Add order by clause
-        return $this->db->get('aduan')->result();
+        if (is_array($projekid)) {
+            $this->db->where_in('NoProjek', $projekid);
+        } else {
+            $this->db->where('NoProjek', $projekid);
+        }
+        $this->db->where('StatusAduan', 'Siap Dibaiki');
+        $this->db->order_by('NoAduan', 'DESC');
+        $query = $this->db->get('aduan');
+        return $query->result();
     }
+
 
     public function delete($where, $table)
     {
@@ -52,6 +73,15 @@ class Aduan_model extends CI_Model
     {
         $this->db->where('NoAduan', $data['NoAduan']);
         $this->db->update($table, $data);
+    }
+
+    public function getDataByNoAduan($noAduan)
+    {
+        $aduanQuery = $this->db->get_where('aduan', array('NoAduan' => $noAduan));
+        // Assuming you want to return an array containing data from the table
+        return array(
+            'aduan' => $aduanQuery->row(),
+        );
     }
 
     public function count_aduan_by_project($noProjek)

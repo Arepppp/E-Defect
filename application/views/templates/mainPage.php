@@ -27,6 +27,26 @@
             justify-content: center;
         }
 
+        .navbar_top {
+            display: flex;
+            justify-content: center;
+            background-color: #007bff;
+            overflow: hidden;
+        }
+
+        .navbar_top a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+
+        .navbar_top a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
         .navbar {
             width: 40%;
             margin: 10px auto;
@@ -370,11 +390,15 @@
             </div>
         </div>
     </div>
-    <div class="tambah-projek-button-container">
-        <button class="tambah-projek-button" onclick="window.location.href='tambah'" class="btn btn-primary">Tambah
-            Projek</button>
+    <div class="navbar_top">
+        <a href="tambah">Tambah Projek</a>
+        <a href="setupSA">Setup Superadmin</a>
+        <a href="setupJT">Setup Juruteknik</a>
+        <a href="setupAPTJ">Setup Admin Pusat Tanggungjawab</a>
+        <a href="setupKontraktor">Setup Kontraktor</a>
+        <a href="setupPerunding">Setup Perunding</a>
+        <a href="setupKerosakan">Setup Kerosakan</a>
     </div>
-
     <table border="1">
         <thead>
             <tr class="text-center">
@@ -409,7 +433,6 @@
                             class="btn btn-primary <?= in_array($projekItem->StatusProjek, ['Tamat Tempoh Waranti', 'Projek Batal']) ? 'disabled' : '' ?>">
                             Kemaskini
                         </button>
-
                     </td>
                     <td>
                         <form action="<?= base_url('projek/lihat_projek') ?>" method="get">

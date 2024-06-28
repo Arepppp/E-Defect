@@ -93,123 +93,155 @@ class Projek extends CI_Controller
             'email',
             'Email',
             'required|trim|valid_email',
-            array(
-                'required' => '%s Harus Diisi !!'
-            )
+            array('required' => '%s Harus Diisi !!')
         );
         $this->form_validation->set_rules(
             'psw',
             'Password',
             'required|trim',
-            array(
-                'required' => '%s Harus Diisi !!'
-            )
+            array('required' => '%s Harus Diisi !!')
         );
+
         if ($this->form_validation->run() == false) {
             $this->load->view('templates/loginPage');
         } else {
             $email = $this->input->post('email');
             $password = $this->input->post('psw');
 
+            // Debugging
+            log_message('debug', "Email: $email, Password: $password");
+
             // Check email
             $superadmin = $this->db->get_where('superadmin', ['EmelSA' => $email])->row_array();
             $juruteknik = $this->db->get_where('juruteknik', ['EmelJT' => $email])->row_array();
             $adminptj = $this->db->get_where('adminptj', ['EmelAPTJ' => $email])->row_array();
 
+            // Debugging
+            log_message('debug', "Superadmin: " . json_encode($superadmin));
+            log_message('debug', "Juruteknik: " . json_encode($juruteknik));
+            log_message('debug', "Adminptj: " . json_encode($adminptj));
+
             if ($superadmin) {
                 if ($password == $superadmin['NoKP_SA']) {
-                    // Define count variables for superadmin
-                    $count_today = $this->aduan_model->count_aduan_today();
-                    $count_total = $this->aduan_model->count_all_aduan();
-                    $count_belum_siap = $this->aduan_model->count_aduan_belum_siap();
-                    $count_siap = $this->aduan_model->count_aduan_siap();
-
-                    $data = [
-                        'count_today' => $count_today,
-                        'count_total' => $count_total,
-                        'count_belum_siap' => $count_belum_siap,
-                        'count_siap' => $count_siap
-                    ];
-
-                    $this->session->set_userdata($data);
-                    redirect('projek/index');
+                    $this->handleSuperadminLogin();
                 } else {
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
-                    redirect('projek/login');
+                    $this->setLoginErrorMessage('Password salah!');
                 }
             } else if ($juruteknik) {
                 if ($password == $juruteknik['NoKP_JT']) {
-                    $id = $juruteknik['IdJT'];
-                    $projek_ids = $this->db->select('NoProjek')->from('projek')->where('IdJT', $id)->get()->result_array();
-                    $projek_ids = array_column($projek_ids, 'NoProjek');
-
-                    if (!empty($projek_ids)) {
-                        $count_today = $this->db->where_in('NoProjek', $projek_ids)->where('DATE(TarikhAduan)', date('Y-m-d'))->count_all_results('aduan');
-                        $count_total = $this->db->where_in('NoProjek', $projek_ids)->count_all_results('aduan');
-
-                        $count_belum_siap = $this->aduan_model->count_aduan_belum_siap($projek_ids);
-                        $count_siap = $this->aduan_model->count_aduan_siap($projek_ids);
-
-                        $data = [
-                            'id' => $juruteknik['IdJT'],
-                            'role_id' => 'Juruteknik',
-                            'count_today' => $count_today,
-                            'count_total' => $count_total,
-                            'count_belum_siap' => $count_belum_siap,
-                            'count_siap' => $count_siap
-                        ];
-
-                        $this->session->set_userdata($data);
-                        redirect('juruteknik/index');
-                    } else {
-                        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Tiada projek didaftarkan</div>');
-                        redirect('projek/login');
-                    }
+                    $this->handleJuruteknikLogin($juruteknik);
                 } else {
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
-                    redirect('projek/login');
+                    $this->setLoginErrorMessage('Password salah!');
                 }
             } else if ($adminptj) {
                 if ($password == $adminptj['NoKP_APTJ']) {
-                    $id = $adminptj['IdAPTJ'];
-                    $projek_ids = $this->db->select('NoProjek')->from('projek')->where('IdAPTJ', $id)->get()->result_array();
-                    $projek_ids = array_column($projek_ids, 'NoProjek');
-
-                    if (!empty($projek_ids)) {
-                        $this->db->where_in('NoProjek', $projek_ids);
-                        $this->db->where('DATE(TarikhAduan)', date('Y-m-d'));
-                        $count_today = $this->db->count_all_results('aduan');
-
-                        $this->db->where_in('NoProjek', $projek_ids);
-                        $count_total = $this->db->count_all_results('aduan');
-
-                        $count_belum_siap = $this->aduan_model->count_aduan_belum_siap($projek_ids);
-                        $count_siap = $this->aduan_model->count_aduan_siap($projek_ids);
-
-                        $data = [
-                            'id' => $adminptj['IdAPTJ'],
-                            'role_id' => 'Admin Pusat Tanggungjawab',
-                            'count_today' => $count_today,
-                            'count_total' => $count_total,
-                            'count_belum_siap' => $count_belum_siap,
-                            'count_siap' => $count_siap
-                        ];
-
-                        $this->session->set_userdata($data);
-                        redirect('adminptj/index');
-                    } else {
-                        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Tiada projek didaftarkan</div>');
-                        redirect('projek/login');
-                    }
+                    $this->handleAdminptjLogin($adminptj);
                 } else {
-                    $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
-                    redirect('projek/login');
+                    $this->setLoginErrorMessage('Password salah!');
                 }
             } else {
-                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Emel tidak didaftarkan</div>');
-                redirect('projek/login');
+                $this->setLoginErrorMessage('Emel tidak didaftarkan');
             }
         }
+    }
+
+    private function handleSuperadminLogin()
+    {
+        // Define count variables for superadmin
+        $count_today = $this->aduan_model->count_aduan_today();
+        $count_total = $this->aduan_model->count_all_aduan();
+        $count_belum_siap = $this->aduan_model->count_aduan_belum_siap();
+        $count_siap = $this->aduan_model->count_aduan_siap();
+
+        // Debugging
+        log_message('debug', "Superadmin counts - Today: $count_today, Total: $count_total, Belum Siap: $count_belum_siap, Siap: $count_siap");
+
+        $data = [
+            'count_today' => $count_today,
+            'count_total' => $count_total,
+            'count_belum_siap' => $count_belum_siap,
+            'count_siap' => $count_siap
+        ];
+
+        $this->session->set_userdata($data);
+        redirect('projek/index');
+    }
+
+    private function handleJuruteknikLogin($juruteknik)
+    {
+        $id = $juruteknik['IdJT'];
+        $projek_ids = $this->db->select('NoProjek')->from('projek')->where('IdJT', $id)->get()->result_array();
+        $projek_ids = array_column($projek_ids, 'NoProjek');
+
+        // Debugging
+        log_message('debug', "Juruteknik Projects: " . json_encode($projek_ids));
+
+        if (!empty($projek_ids)) {
+            $count_today = $this->db->where_in('NoProjek', $projek_ids)->where('DATE(TarikhAduan)', date('Y-m-d'))->count_all_results('aduan');
+            $count_total = $this->db->where_in('NoProjek', $projek_ids)->count_all_results('aduan');
+            $count_belum_siap = $this->aduan_model->count_aduan_belum_siap($projek_ids);
+            $count_siap = $this->aduan_model->count_aduan_siap($projek_ids);
+
+            // Debugging
+            log_message('debug', "Juruteknik counts - Today: $count_today, Total: $count_total, Belum Siap: $count_belum_siap, Siap: $count_siap");
+
+            $data = [
+                'id' => $juruteknik['IdJT'],
+                'role_id' => 'Juruteknik',
+                'count_today' => $count_today,
+                'count_total' => $count_total,
+                'count_belum_siap' => $count_belum_siap,
+                'count_siap' => $count_siap
+            ];
+
+            $this->session->set_userdata($data);
+            redirect('juruteknik/index');
+        } else {
+            $this->setLoginErrorMessage('Tiada projek didaftarkan');
+        }
+    }
+
+    private function handleAdminptjLogin($adminptj)
+    {
+        $id = $adminptj['IdAPTJ'];
+        $projek_ids = $this->db->select('NoProjek')->from('projek')->where('IdAPTJ', $id)->get()->result_array();
+        $projek_ids = array_column($projek_ids, 'NoProjek');
+
+        // Debugging
+        log_message('debug', "Adminptj Projects: " . json_encode($projek_ids));
+
+        if (!empty($projek_ids)) {
+            $count_today = $this->db->where_in('NoProjek', $projek_ids)->where('DATE(TarikhAduan)', date('Y-m-d'))->count_all_results('aduan');
+            $count_total = $this->db->where_in('NoProjek', $projek_ids)->count_all_results('aduan');
+            $count_belum_siap = $this->aduan_model->count_aduan_belum_siap($projek_ids);
+            $count_siap = $this->aduan_model->count_aduan_siap($projek_ids);
+
+            // Debugging
+            log_message('debug', "Adminptj counts - Today: $count_today, Total: $count_total, Belum Siap: $count_belum_siap, Siap: $count_siap");
+
+            $data = [
+                'id' => $adminptj['IdAPTJ'],
+                'role_id' => 'Admin Pusat Tanggungjawab',
+                'count_today' => $count_today,
+                'count_total' => $count_total,
+                'count_belum_siap' => $count_belum_siap,
+                'count_siap' => $count_siap
+            ];
+
+            $this->session->set_userdata($data);
+            redirect('adminptj/index');
+        } else {
+            $this->setLoginErrorMessage('Tiada projek didaftarkan');
+        }
+    }
+
+    private function setLoginErrorMessage($message)
+    {
+        // Debugging
+        log_message('debug', "Login error: $message");
+
+        $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">' . $message . '</div>');
+        redirect('projek/login');
     }
 
 
@@ -375,39 +407,288 @@ class Projek extends CI_Controller
         return null;
     }
 
-    public function edit($NoProjek)
+    public function editSA($IdSA)
     {
-        $this->_rules();
+        $data = array(
+            'IdSA' => $IdSA,
+            'NamaPenuhSA' => $this->input->post('namaPenuhSA'),
+            'NoKP_SA' => $this->input->post('noKPSA'),
+            'NoTelSA' => $this->input->post('noTelSA'),
+            'EmelSA' => $this->input->post('emelSA'),
+        );
 
-        if ($this->form_validation->run() == false) {
-            $this->index();
-        } else {
-            $data = array(
-                'NoProjek' => $NoProjek,
-                'NamaProjek' => $this->input->post('namaProjek'),
-                'StatusProjek' => $this->input->post('statusProjek'),
-                'TarikhMulaWaranti' => $this->input->post('tarikhMulaWaranti'),
-                'TarikhTamatWaranti' => $this->input->post('tarikhTamatWaranti'),
-                'IdJT' => $this->input->post('IdJT'),
-                'IdAPTJ' => $this->input->post('IdAPTJ'),
-            );
-
-            $this->projek_model->update_data($data, 'projek');
-            $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+        $this->projek_model->update_SA($data, 'superadmin');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
             Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span></button></div>');
-            redirect('projek/index');
-        }
+        redirect('projek/setupSA');
     }
 
-    public function delete($NoProjek)
+    public function deleteSA($IdSA)
     {
-        $where = array('NoProjek' => $NoProjek);
-        $this->projek_model->delete($where, 'projek');
+        $where = array('IdSA' => $IdSA);
+        $this->projek_model->delete($where, 'superadmin');
         $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
             Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span></button></div>');
         redirect('projek/index');
+    }
+
+    public function tambah_APTJ()
+    {
+        $data = array(
+            'NamaPenuhAPTJ' => $this->input->post('namaPenuhAPTJ'),
+            'NoKP_APTJ' => $this->input->post('noKPAPTJ'),
+            'NoTelAPTJ' => $this->input->post('noTelAPTJ'),
+            'EmelAPTJ' => $this->input->post('emelAPTJ'),
+            'IdSA' => '1001',
+        );
+
+        $this->projek_model->insert($data, 'adminptj');
+        $this->session->set_flashdata('pesan', '<div class="alert alert-warning alert-dismissible fade show" role="alert">Data Berhasil Ditambah <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupAPTJ');
+
+    }
+
+    public function editAPTJ($IdAPTJ)
+    {
+        $data = array(
+            'IdAPTJ' => $IdAPTJ,
+            'NamaPenuhAPTJ' => $this->input->post('namaPenuhAPTJ'),
+            'NoKP_APTJ' => $this->input->post('noKPAPTJ'),
+            'NoTelAPTJ' => $this->input->post('noTelAPTJ'),
+            'EmelAPTJ' => $this->input->post('emelAPTJ'),
+        );
+
+        $this->projek_model->update_APTJ($data, 'adminptj');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupAPTJ');
+
+    }
+
+    public function deleteAPTJ($IdAPTJ)
+    {
+        $where = array('IdAPTJ' => $IdAPTJ);
+        $this->projek_model->delete($where, 'adminptj');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupAPTJ');
+    }
+
+    public function tambahKontraktor($IDKONTRAKTOR)
+    {
+        $data = array(
+            'NAMASYARIKAT' => $this->input->post('namaSyarikat'),
+            'ALAMAT' => $this->input->post('alamat'),
+            'NOTELKONTRAKTOR' => $this->input->post('noTelKontraktor'),
+            'NOFAKSKONTRAKTOR' => $this->input->post('noFaksKontraktor'),
+            'EMELKONTRAKTOR' => $this->input->post('emelKontraktor'),
+            'STATUSKONTRAKTOR' => $this->input->post('statusKontraktor'),
+        );
+
+        $this->projek_model->insert($data, 'kontraktor');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupKontraktor');
+    }
+
+    public function editKontraktor($IDKONTRAKTOR)
+    {
+        $data = array(
+            'IDKONTRAKTOR' => $IDKONTRAKTOR,
+            'NAMASYARIKAT' => $this->input->post('namaSyarikat'),
+            'ALAMAT' => $this->input->post('alamat'),
+            'NOTELKONTRAKTOR' => $this->input->post('noTelKontraktor'),
+            'NOFAKSKONTRAKTOR' => $this->input->post('noFaksKontraktor'),
+            'EMELKONTRAKTOR' => $this->input->post('emelKontraktor'),
+            'STATUSKONTRAKTOR' => $this->input->post('statusKontraktor'),
+        );
+
+        $this->projek_model->update_Kontraktor($data, 'kontraktor');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupKontraktor');
+    }
+
+    public function deleteKontraktor($IdKontraktor)
+    {
+        $where = array('IDKONTRAKTOR' => $IdKontraktor);
+        $this->projek_model->delete($where, 'kontraktor');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupKontraktor');
+    }
+
+    public function tambahKerosakan($KODKEROSKAN)
+    {
+        $data = array(
+            'JENISKEROSAKAN' => $this->input->post('jenisKerosakan'),
+        );
+
+        $this->projek_model->insert($data, 'kerosakan');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Ditambah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupKerosakan');
+    }
+
+    public function editKerosakan($KODKEROSKAN)
+    {
+        $data = array(
+            'KODKEROSKAN' => $KODKEROSKAN,
+            'JENISKEROSAKAN' => $this->input->post('jenisKerosakan'),
+        );
+
+        $this->projek_model->update_Kerosakan($data, 'kerosakan');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupKerosakan');
+    }
+
+    public function deleteKerosakan($KodKeroskan)
+    {
+        $where = array('KODKEROSKAN' => $KodKeroskan);
+        $this->projek_model->delete($where, 'kerosakan');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupKerosakan');
+    }
+
+    public function tambahDetail($KODDETAIL)
+    {
+        $data = array(
+            'KETERANGANDETAIL' => $this->input->post('detailKerosakan'),
+            'KODKEROSAKAN' => $this->input->post('kodKerosakan'),
+        );
+
+        $this->projek_model->insert($data, 'detail_kerosakan');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Ditambah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupDetailKerosakan');
+    }
+
+    public function editDetail($KODDETAIL)
+    {
+        $data = array(
+            'KODDETAIL' => $KODDETAIL,
+            'KETERANGANDETAIL' => $this->input->post('detailKerosakan'),
+            'KODKEROSAKAN' => $this->input->post('kodKerosakan'),
+        );
+
+        $this->projek_model->update_Detail($data, 'detail_kerosakan');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupDetailKerosakan');
+    }
+
+    public function deleteDetail($KodDetail)
+    {
+        $where = array('KODDETAIL' => $KodDetail);
+        $this->projek_model->delete($where, 'detail_kerosakan');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupDetailKerosakan');
+    }
+
+    public function tambahPerunding($IDPERUNDING)
+    {
+        $data = array(
+            'NAMASYARIKAT' => $this->input->post('namaSyarikat'),
+            'ALAMAT' => $this->input->post('alamat'),
+            'NOTELPERUNDING' => $this->input->post('noTelPerunding'),
+            'NOFAKSPERUNDING' => $this->input->post('noFaksPerunding'),
+            'EMELPERUNDING' => $this->input->post('emelPerunding'),
+            'STATUSPERUNDING' => $this->input->post('statusPerunding'),
+        );
+
+        $this->projek_model->insert($data, 'perunding');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Ditambah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupPerunding');
+    }
+
+    public function editPerunding($IDPERUNDING)
+    {
+        $data = array(
+            'IDPERUNDING' => $IDPERUNDING,
+            'NAMASYARIKAT' => $this->input->post('namaSyarikat'),
+            'ALAMAT' => $this->input->post('alamat'),
+            'NOTELPERUNDING' => $this->input->post('noTelPerunding'),
+            'NOFAKSPERUNDING' => $this->input->post('noFaksPerunding'),
+            'EMELPERUNDING' => $this->input->post('emelPerunding'),
+            'STATUSPERUNDING' => $this->input->post('statusPerunding'),
+        );
+
+        $this->projek_model->update_Perunding($data, 'perunding');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupPerunding');
+    }
+
+    public function deletePerunding($IdPerunding)
+    {
+        $where = array('IDPERUNDING' => $IdPerunding);
+        $this->projek_model->delete($where, 'perunding');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupPerunding');
+    }
+
+    public function tambah_JT()
+    {
+        $data = array(
+            'NamaPenuhJT' => $this->input->post('namaPenuhJT'),
+            'NoKP_JT' => $this->input->post('noKPJT'),
+            'NoTelJT' => $this->input->post('noTelJT'),
+            'EmelJT' => $this->input->post('emelJT'),
+            'IdSA' => '1001',
+        );
+
+        $this->projek_model->insert($data, 'juruteknik');
+        $this->session->set_flashdata('pesan', '<div class="alert alert-warning alert-dismissible fade show" role="alert">Data Berhasil Ditambah <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupJT');
+
+    }
+
+    public function editJT($IdJT)
+    {
+        $data = array(
+            'IdJT' => $IdJT,
+            'NamaPenuhJT' => $this->input->post('namaPenuhJT'),
+            'NoKP_JT' => $this->input->post('noKPJT'),
+            'NoTelJT' => $this->input->post('noTelJT'),
+            'EmelJT' => $this->input->post('emelJT'),
+        );
+
+        $this->projek_model->update_JT($data, 'juruteknik');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Diubah <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupJT');
+    }
+
+    public function deleteJT($IdJT)
+    {
+        $where = array('IdJT' => $IdJT);
+        $this->projek_model->delete($where, 'juruteknik');
+        $this->session->set_flashdata('pesan', '<div class=<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Data Berhasil Dibuang <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span></button></div>');
+        redirect('projek/setupJT');
     }
 
     public function update_status()
@@ -430,6 +711,42 @@ class Projek extends CI_Controller
         }
     }
 
+    public function setupSA()
+    {
+        $data['sa_list'] = $this->projek_model->get_all_sa();
+        $this->load->view('templates/setUpSuperadmin', $data);
+    }
+    public function setupJT()
+    {
+        $data['jt_list'] = $this->juruteknik_model->get_all_jt();
+        $this->load->view('templates/setUpJuruteknik', $data);
+    }
+    public function setupAPTJ()
+    {
+        $data['aptj_list'] = $this->adminptj_model->get_all_aptj();
+        $this->load->view('templates/setUpAdminPTJ', $data);
+    }
+    public function setupKontraktor()
+    {
+        $data['kontraktor_list'] = $this->projek_model->get_all_kontraktor();
+        $this->load->view('templates/setUpKontraktor', $data);
+    }
+    public function setupPerunding()
+    {
+        $data['perunding_list'] = $this->projek_model->get_all_perunding();
+        $this->load->view('templates/setUpPerunding', $data);
+    }
+    public function setupKerosakan()
+    {
+        $data['kerosakan_list'] = $this->projek_model->get_all_kerosakan();
+        $this->load->view('templates/setUpKerosakan', $data);
+    }
+    public function setupDetailKerosakan()
+    {
+        $data['detail_list'] = $this->projek_model->get_all_detail_kerosakan();
+        $data['kerosakan_list'] = $this->projek_model->get_all_kerosakan();
+        $this->load->view('templates/setUpDetailKerosakan', $data);
+    }
 
     public function _rules()
     {

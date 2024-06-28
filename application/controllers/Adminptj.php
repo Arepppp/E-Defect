@@ -32,43 +32,60 @@ class Adminptj extends CI_Controller
 		$data['user_name'] = $this->adminptj_model->get_user_name($idaptj);
 		$data['projek'] = $this->projek_model->get_projek_for_adminptj($idaptj)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_APTJ($idaptj);
+
 		$data['aduan'] = $this->aduan_model->get_aduan_from_projek($data['noprojek']);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage3', $data);
 	}
+
 	public function index2()
 	{
 		$idaptj = $this->session->userdata('id');
 		$data['user_name'] = $this->adminptj_model->get_user_name($idaptj);
 		$data['projek'] = $this->projek_model->get_projek_for_adminptj($idaptj)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_APTJ($idaptj);
-		$data['aduan'] = $this->aduan_model->get_aduan_from_date($data['noprojek']);
+
+		$date = date('Y-m-d'); // Example date, you can change this to any date you need
+		$data['aduan'] = $this->aduan_model->get_aduan_from_date($data['noprojek'], $date);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage3', $data);
 	}
+
 	public function index3()
 	{
 		$idaptj = $this->session->userdata('id');
 		$data['user_name'] = $this->adminptj_model->get_user_name($idaptj);
 		$data['projek'] = $this->projek_model->get_projek_for_adminptj($idaptj)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_APTJ($idaptj);
+
 		$data['aduan'] = $this->aduan_model->get_aduan_tak_siap($data['noprojek']);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage3', $data);
 	}
+
 	public function index4()
 	{
 		$idaptj = $this->session->userdata('id');
 		$data['user_name'] = $this->adminptj_model->get_user_name($idaptj);
 		$data['projek'] = $this->projek_model->get_projek_for_adminptj($idaptj)->result();
 		$data['noprojek'] = $this->projek_model->getNoProjek_APTJ($idaptj);
+
 		$data['aduan'] = $this->aduan_model->get_aduan_siap($data['noprojek']);
+
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
+
 		$this->load->view('templates/mainPage3', $data);
 	}
+
 
 }

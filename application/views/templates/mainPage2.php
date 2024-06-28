@@ -228,6 +228,10 @@
                             <input type="hidden" name="NoProjek" value="<?= $projekItem->NoProjek ?>">
                             <input type="hidden" name="IdJT" value="<?= $projekItem->IdJT ?>">
                             <input type="hidden" name="IdAPTJ" value="<?= $projekItem->IdAPTJ ?>">
+                            <input type="hidden" name="IdKontraktor" value="<?= $projekItem->IDKONTRAKTOR ?>">
+                            <input type="hidden" name="IdPerunding1" value="<?= $projekItem->IDPERUNDING1 ?>">
+                            <input type="hidden" name="IdPerunding2" value="<?= $projekItem->IDPERUNDING2 ?>">
+                            <input type="hidden" name="IdPerunding3" value="<?= $projekItem->IDPERUNDING3 ?>">
                             <button type="submit">Maklumat Lanjut</button>
                         </form>
                     </td>
@@ -250,6 +254,7 @@
                 <th>Status Aduan</th>
                 <th>Tarikh Aduan</th>
                 <th>Tarikh Status Dikemaskini</th>
+                <th>Maklumat Aduan</th>
                 <th>Kemaskini</th>
                 <th>Batal Aduan</th>
             </tr>
@@ -296,6 +301,12 @@
                     <td><?= $aduanItem->StatusAduan ?></td>
                     <td><?= $aduanItem->TarikhAduan ?></td>
                     <td><?= $aduanItem->TarikhStatusDikemaskini ?></td>
+                    <td>
+                        <form action="<?= base_url('aduan/lihat_aduan') ?>" method="get">
+                            <input type="hidden" name="NoAduan" value="<?= $aduanItem->NoAduan ?>">
+                            <button type="submit">Laporan Aduan</button>
+                        </form>
+                    </td>
                     <td><button data-toggle="modal" data-target="#edit<?= $aduanItem->NoAduan ?>">Kemaskini</button></td>
                     <td>
                         <button

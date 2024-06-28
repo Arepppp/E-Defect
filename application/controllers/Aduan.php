@@ -250,6 +250,36 @@ class Aduan extends CI_Controller
         redirect('http://localhost:8080/e-DefectTest/juruteknik/index');
     }
 
+    public function lihat_aduan()
+    {
+        //Juruteknik
+        $noAduan = $this->input->get('NoAduan');
+
+        // Load the model for accessing the database
+        $this->load->model('aduan_model'); // Make sure to load the aduan model
+
+        // Fetch data from the database based on the NoProjek value
+        $data['details'] = $this->aduan_model->getDataByNoAduan($noAduan);
+
+        // Load the view to display the details
+        $this->load->view('templates/laporanAduanJT', $data);
+    }
+
+    public function lihat_aduan2()
+    {
+        //AdminPusatTanggungjawab
+        $noAduan = $this->input->get('NoAduan');
+
+        // Load the model for accessing the database
+        $this->load->model('aduan_model'); // Make sure to load the aduan model
+
+        // Fetch data from the database based on the NoProjek value
+        $data['details'] = $this->aduan_model->getDataByNoAduan($noAduan);
+
+        // Load the view to display the details
+        $this->load->view('templates/laporanAduanAPTJ', $data);
+    }
+
     public function _rules()
     {
         $this->form_validation->set_rules('jenisKerosakan', 'Jenis Kerosakan', 'required', array('required' => '%s Harus Diisi !!'));
