@@ -155,12 +155,8 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            // Update detailAduan when jenisKerosakan changes
-            $(document).on('change', '[id^=jenisKerosakan]', function () {
+            $('#jenisKerosakan').change(function () {
                 var kodkerosakan = $(this).val();
-                var modalId = $(this).attr('id');
-                var detailAduanId = modalId.replace('jenisKerosakan', 'detailAduan');
-
                 if (kodkerosakan != '') {
                     $.ajax({
                         url: "<?= base_url(); ?>aduan/get_details",
@@ -168,9 +164,9 @@
                         data: { kodkerosakan: kodkerosakan },
                         dataType: "json",
                         success: function (data) {
-                            $('#' + detailAduanId).html('<option value="">Pilih Maklumat Kerosakan</option>');
+                            $('#detailAduan').html('<option value="">Pilih Maklumat Kerosakan</option>');
                             $.each(data, function (key, value) {
-                                $('#' + detailAduanId).append('<option value="' + value.KODDETAIL + '">' + value.KETERANGANDETAIL + '</option>');
+                                $('#detailAduan').append('<option value="' + value.KODDETAIL + '">' + value.KETERANGANDETAIL + '</option>');
                             });
                         },
                         error: function (xhr, status, error) {
@@ -178,11 +174,12 @@
                         }
                     });
                 } else {
-                    $('#' + detailAduanId).html('<option value="">Pilih Maklumat Kerosakan</option>');
+                    $('#detailAduan').html('<option value="">Pilih Maklumat Kerosakan</option>');
                 }
             });
         });
     </script>
+
 
 </head>
 
@@ -462,14 +459,13 @@
     <?php foreach ($aduan as $aduanItem):
         $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($aduanItem->KODKEROSKAN);
         $keteranganDetail = $this->aduan_model->getKeteranganDetailName($aduanItem->KODDETAIL); ?>
-        <div class="modal fade" id="edit<?= $aduanItem->NoAduan ?>">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" id="edit<?= $aduanItem->NoAduan ?>" tabindex="-1"
+            aria-labelledby="editLabel<?= $aduanItem->NoAduan ?>" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Kemaskini data</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                        <h5 class="modal-title" id="editLabel<?= $aduanItem->NoAduan ?>">Kemaskini data</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form action="<?= base_url('aduan/edit2/' . $aduanItem->NoAduan) ?>" method="POST">
@@ -477,6 +473,33 @@
                                 <label>No Aduan:</label><br>
                                 <input type="text" name="noAduan" class="form-control" value="<?= $aduanItem->NoAduan ?>"
                                     readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Jenis Kerosakan:</label><br>
+                                <select class="form-control" id="jenisKerosakan<?= $aduanItem->NoAduan ?>"
+                                    name="jenisKerosakan">
+                                    <option value="">Pilih Jenis Kerosakan</option>
+                                    <?php foreach ($kerosakan as $kerosakanItem): ?>
+                                        <option value="<?= $kerosakanItem['KODKEROSKAN'] ?>"
+                                            <?= $aduanItem->KODKEROSKAN == $kerosakanItem['KODKEROSKAN'] ? 'selected' : '' ?>>
+                                            <?= $kerosakanItem['JENISKEROSAKAN'] ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?= form_error('jenisKerosakan', '<div class="text-small text-danger">', '</div>'); ?>
+                            </div>
+                            <div class="form-group">
+                                <label>Maklumat Kerosakan:</label><br>
+                                <select class="form-control" id="detailAduan<?= $aduanItem->NoAduan ?>" name="detailAduan">
+                                    <option value="">Pilih Maklumat Kerosakan</option>
+                                    <?php foreach ($detail_kerosakan as $detailItem): ?>
+                                        <option value="<?= $detailItem->KODDETAIL ?>"
+                                            <?= $aduanItem->KODDETAIL == $detailItem->KODDETAIL ? 'selected' : '' ?>>
+                                            <?= $detailItem->KETERANGANDETAIL ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?= form_error('detailAduan', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
                                 <label>Tajuk Aduan:</label><br>
@@ -496,16 +519,20 @@
                                 <?= form_error('statusAduan', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit">HANTAR</button>
-                                <button type="reset">RESET</button>
+                                <button type="submit" class="btn btn-primary">HANTAR</button>
+                                <button type="reset" class="btn btn-secondary">RESET</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    <?php endforeach ?>
-    <button class="logout-button" onclick="window.location.href='http://localhost:8080/e-DefectTest/'">Logout</button>
+    <?php endforeach; ?>
+
+
+    <form action="<?= base_url('projek/logout'); ?>" method="post" style="display: inline;">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
     <button class="print-button" onclick="printReport()">Print Page</button>
 </body>
 

@@ -138,6 +138,12 @@
                 window.location.href = url;
             }
         }
+
+        function confirmAndRedirect2(url) {
+            if (confirm('Adakah anda ingin membatal aduan ini?')) {
+                window.location.href = url;
+            }
+        }
     </script>
 </head>
 
@@ -310,7 +316,7 @@
                     <td><button data-toggle="modal" data-target="#edit<?= $aduanItem->NoAduan ?>">Kemaskini</button></td>
                     <td>
                         <button
-                            onclick="confirmAndRedirect('<?= site_url('aduan/batal_Aduan?NoAduan=' . urlencode($aduanItem->NoAduan)) ?>')"
+                            onclick="confirmAndRedirect2('<?= site_url('aduan/batal_Aduan?NoAduan=' . urlencode($aduanItem->NoAduan)) ?>')"
                             class="btn btn-primary">
                             BATAL ADUAN
                         </button>
@@ -341,23 +347,12 @@
                                 <input type="text" name="noAduan" class="form-control" value="<?= $aduanItem->NoAduan ?>">
                             </div>
                             <div class="form-group">
-                                <label>Tajuk Aduan:</label><br>
-                                <input type="text" name="tajukAduan" class="form-control"
-                                    value="<?= $aduanItem->TajukAduan ?>">
-                                <?= form_error('tajukAduan', '<div class="text-small text-danger">', '</div>'); ?>
-                            </div>
-                            <div class="form-group">
-                                <label>Keterangan:</label><br>
-                                <input type="text" name="keterangan" class="form-control"
-                                    value="<?= $aduanItem->Keterangan ?>">
-                                <?= form_error('keterangan', '<div class="text-small text-danger">', '</div>'); ?>
-                            </div>
-                            <div class="form-group">
                                 <label>Status Aduan:</label><br>
                                 <select name="statusAduan" class="form-control">
                                     <option value="Sedang Disemak" <?= $aduanItem->StatusAduan == 'Sedang Disemak' ? 'selected' : '' ?>>Sedang Disemak</option>
                                     <option value="Aduan Disahkan" <?= $aduanItem->StatusAduan == 'Aduan Disahkan' ? 'selected' : '' ?>>Aduan Disahkan</option>
-                                    <option value="Sedang Dibaiki" <?= $aduanItem->StatusAduan == 'Sedang Dibaiki' ? 'selected' : '' ?>>Sedang Dibaiki</option> </select>
+                                    <option value="Sedang Dibaiki" <?= $aduanItem->StatusAduan == 'Sedang Dibaiki' ? 'selected' : '' ?>>Sedang Dibaiki</option>
+                                </select>
                                 <?= form_error('statusAduan', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
 
@@ -375,7 +370,9 @@
             </div>
         </div>
     <?php endforeach ?>
-    <button class="logout-button" onclick="window.location.href='http://localhost:8080/e-DefectTest/'">Logout</button>
+    <form action="<?= base_url('projek/logout'); ?>" method="post" style="display: inline;">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
     <button class="print-button" onclick="printReport()">Print Page</button>
 </body>
 

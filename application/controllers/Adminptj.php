@@ -25,6 +25,9 @@ class Adminptj extends CI_Controller
 		$this->load->model('projek_model');
 		$this->load->model('adminptj_model');
 		$this->load->model('aduan_model');
+
+		$this->load->library('auth'); // Load the Auth library
+		$this->auth->check_login(); // Check login status 
 	}
 	public function index()
 	{
@@ -34,6 +37,8 @@ class Adminptj extends CI_Controller
 		$data['noprojek'] = $this->projek_model->getNoProjek_APTJ($idaptj);
 
 		$data['aduan'] = $this->aduan_model->get_aduan_from_projek($data['noprojek']);
+		$data['kerosakan'] = $this->aduan_model->get_all_kerosakan(); // Fetch kerosakan list
+		$data['detail_kerosakan'] = $this->aduan_model->get_all_detail_kerosakan(); // Fetch all detail kerosakan
 
 		$data['count_today'] = $this->session->userdata('count_today');
 		$data['count_total'] = $this->session->userdata('count_total');
@@ -87,5 +92,12 @@ class Adminptj extends CI_Controller
 		$this->load->view('templates/mainPage3', $data);
 	}
 
+	// AJAX method to handle detail kerosakan based on jenis kerosakan
+	public function get_detail_kerosakan_by_kod()
+	{
+		$kodkerosakan = $this->input->post('kodkerosakan');
+		$result = $this->aduan_model->get_detail_kerosakan_by_kod($kodkerosakan);
+		echo json_encode($result);
+	}
 
 }

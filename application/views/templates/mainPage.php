@@ -537,7 +537,9 @@
             </div>
         </div>
     <?php endforeach ?>
-    <button class="logout-button" onclick="window.location.href='http://localhost:8080/e-DefectTest/'">Logout</button>
+    <form action="<?= base_url('projek/logout'); ?>" method="post" style="display: inline;">
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
     <button class="print-button" onclick="printReport()">Print Page</button>
 </body>
 

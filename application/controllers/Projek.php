@@ -27,6 +27,9 @@ class Projek extends CI_Controller
         $this->load->model('aduan_model');
         $this->load->model('juruteknik_model');
         $this->load->model('adminptj_model');
+
+        $this->load->library('auth'); // Load the Auth library
+        $this->auth->check_login(); // Check login status
     }
     public function index()
     {
@@ -87,6 +90,13 @@ class Projek extends CI_Controller
         redirect('projek/index');
     }
 
+    public function logout()
+    {
+        $this->session->sess_destroy(); // Destroy the session
+        redirect('dashboard/index'); // Redirect to the login page
+    }
+
+
     public function login()
     {
         $this->form_validation->set_rules(
@@ -145,18 +155,16 @@ class Projek extends CI_Controller
         }
     }
 
-    private function handleSuperadminLogin()
+    public function handleSuperadminLogin()
     {
-        // Define count variables for superadmin
         $count_today = $this->aduan_model->count_aduan_today();
         $count_total = $this->aduan_model->count_all_aduan();
         $count_belum_siap = $this->aduan_model->count_aduan_belum_siap();
         $count_siap = $this->aduan_model->count_aduan_siap();
 
-        // Debugging
-        log_message('debug', "Superadmin counts - Today: $count_today, Total: $count_total, Belum Siap: $count_belum_siap, Siap: $count_siap");
-
         $data = [
+            'logged_in' => true,
+            'role' => 'superadmin',
             'count_today' => $count_today,
             'count_total' => $count_total,
             'count_belum_siap' => $count_belum_siap,
@@ -167,14 +175,11 @@ class Projek extends CI_Controller
         redirect('projek/index');
     }
 
-    private function handleJuruteknikLogin($juruteknik)
+    public function handleJuruteknikLogin($juruteknik)
     {
         $id = $juruteknik['IdJT'];
         $projek_ids = $this->db->select('NoProjek')->from('projek')->where('IdJT', $id)->get()->result_array();
         $projek_ids = array_column($projek_ids, 'NoProjek');
-
-        // Debugging
-        log_message('debug', "Juruteknik Projects: " . json_encode($projek_ids));
 
         if (!empty($projek_ids)) {
             $count_today = $this->db->where_in('NoProjek', $projek_ids)->where('DATE(TarikhAduan)', date('Y-m-d'))->count_all_results('aduan');
@@ -182,10 +187,8 @@ class Projek extends CI_Controller
             $count_belum_siap = $this->aduan_model->count_aduan_belum_siap($projek_ids);
             $count_siap = $this->aduan_model->count_aduan_siap($projek_ids);
 
-            // Debugging
-            log_message('debug', "Juruteknik counts - Today: $count_today, Total: $count_total, Belum Siap: $count_belum_siap, Siap: $count_siap");
-
             $data = [
+                'logged_in' => true,
                 'id' => $juruteknik['IdJT'],
                 'role_id' => 'Juruteknik',
                 'count_today' => $count_today,
@@ -201,14 +204,11 @@ class Projek extends CI_Controller
         }
     }
 
-    private function handleAdminptjLogin($adminptj)
+    public function handleAdminptjLogin($adminptj)
     {
         $id = $adminptj['IdAPTJ'];
         $projek_ids = $this->db->select('NoProjek')->from('projek')->where('IdAPTJ', $id)->get()->result_array();
         $projek_ids = array_column($projek_ids, 'NoProjek');
-
-        // Debugging
-        log_message('debug', "Adminptj Projects: " . json_encode($projek_ids));
 
         if (!empty($projek_ids)) {
             $count_today = $this->db->where_in('NoProjek', $projek_ids)->where('DATE(TarikhAduan)', date('Y-m-d'))->count_all_results('aduan');
@@ -216,10 +216,8 @@ class Projek extends CI_Controller
             $count_belum_siap = $this->aduan_model->count_aduan_belum_siap($projek_ids);
             $count_siap = $this->aduan_model->count_aduan_siap($projek_ids);
 
-            // Debugging
-            log_message('debug', "Adminptj counts - Today: $count_today, Total: $count_total, Belum Siap: $count_belum_siap, Siap: $count_siap");
-
             $data = [
+                'logged_in' => true,
                 'id' => $adminptj['IdAPTJ'],
                 'role_id' => 'Admin Pusat Tanggungjawab',
                 'count_today' => $count_today,
@@ -235,6 +233,7 @@ class Projek extends CI_Controller
         }
     }
 
+
     private function setLoginErrorMessage($message)
     {
         // Debugging
@@ -244,6 +243,21 @@ class Projek extends CI_Controller
         redirect('projek/login');
     }
 
+    // Controller Method
+    public function get_counters()
+    {
+        $count_today = $this->aduan_model->count_aduan_today();
+        $count_total = $this->aduan_model->count_all_aduan();
+        $count_belum_siap = $this->aduan_model->count_aduan_belum_siap();
+        $count_siap = $this->aduan_model->count_aduan_siap();
+
+        echo json_encode([
+            'count_today' => $count_today,
+            'count_total' => $count_total,
+            'count_belum_siap' => $count_belum_siap,
+            'count_siap' => $count_siap
+        ]);
+    }
 
     public function lihat_projek()
     {
@@ -485,7 +499,7 @@ class Projek extends CI_Controller
             echo json_encode(array('success' => false, 'message' => 'Failed to update status'));
         }
     }
-    
+
     public function editSA($IdSA)
     {
         $data = array(

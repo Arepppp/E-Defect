@@ -10,6 +10,9 @@ class Aduan extends CI_Controller
         $this->load->model('projek_model');
         $this->load->library('form_validation'); // Load form validation library
         $this->load->library('upload'); // Load upload library
+
+        $this->load->library('auth'); // Load the Auth library
+        $this->auth->check_login(); // Check login status
     }
 
     public function upload_form()
@@ -203,9 +206,6 @@ class Aduan extends CI_Controller
         date_default_timezone_set('Asia/Kuala_Lumpur');
         $data = array(
             'NoAduan' => $this->input->post('noAduan'),
-            'JenisAduan' => $this->input->post('jenisAduan'),
-            'TajukAduan' => $this->input->post('tajukAduan'),
-            'Keterangan' => $this->input->post('keterangan'),
             'StatusAduan' => $this->input->post('statusAduan'),
             'TarikhStatusDikemaskini' => date('Y-m-d H:i:s'),
         );
@@ -224,7 +224,8 @@ class Aduan extends CI_Controller
         date_default_timezone_set('Asia/Kuala_Lumpur');
         $data = array(
             'NoAduan' => $this->input->post('noAduan'),
-            'JenisAduan' => $this->input->post('jenisAduan'),
+            'KODKEROSKAN' => $this->input->post('jenisKerosakan'),
+            'KODDETAIL' => $this->input->post('detailAduan'),
             'TajukAduan' => $this->input->post('tajukAduan'),
             'Keterangan' => $this->input->post('keterangan'),
             'StatusAduan' => $this->input->post('statusAduan'),

@@ -182,6 +182,12 @@ class Aduan_model extends CI_Model
         return $query->result_array();
     }
 
+    public function get_all_detail_kerosakan()
+    {
+        $query = $this->db->get('detail_kerosakan');
+        return $query->result();
+    }
+
     //AJAX method for detailKerosakan
     public function get_detail_kerosakan_by_kod($kodkerosakan)
     {
@@ -199,7 +205,6 @@ class Aduan_model extends CI_Model
             return false;
         }
     }
-
 
 }
 

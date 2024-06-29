@@ -26,6 +26,9 @@ class Juruteknik extends CI_Controller
 		$this->load->model('projek_model');
 		$this->load->model('juruteknik_model');
 		$this->load->model('aduan_model');
+
+		$this->load->library('auth'); // Load the Auth library
+        $this->auth->check_login(); // Check login status
 	}
 	public function index()
 	{
