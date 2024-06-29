@@ -83,7 +83,7 @@ class Projek extends CI_Controller
     public function batal()
     {
         $NoProjek = $this->input->get('NoProjek'); // Retrieve Projek ID from URL query parameter
-        $this->projek_model->batal_projek($NoProjek);
+        $this->projek_model->update_status($NoProjek, 'Projek Batal');
         redirect('projek/index');
     }
 
@@ -604,7 +604,7 @@ class Projek extends CI_Controller
         redirect('projek/setupKontraktor');
     }
 
-    public function tambahKerosakan($KODKEROSKAN)
+    public function tambahKerosakan()
     {
         $data = array(
             'JENISKEROSAKAN' => $this->input->post('jenisKerosakan'),

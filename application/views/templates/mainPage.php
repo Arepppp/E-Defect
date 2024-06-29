@@ -232,7 +232,7 @@
             color: black !important;
         }
     </style>
-    
+
     <script>
         function printReport() {
             window.print();
@@ -243,7 +243,7 @@
                 window.location.href = url;
             }
         }
-
+        // Function to update the table styles based on the current status of each project
         function updateTableStyles() {
             let today = new Date();
             let rows = document.querySelectorAll("tbody tr");
@@ -263,38 +263,28 @@
                     newStatus = "Tamat Tempoh Waranti";
                     row.classList.add('bg-red');
                     row.classList.remove('text-danger', 'bg-yellow', 'bg-green');
-                    if (newStatus !== originalStatus) {
-                        statusCell.textContent = newStatus;
-                        console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
-                        updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
-                    }
                 } else if (expiryDate < today) {
                     newStatus = "Aktif";
                     row.classList.add('text-danger');
                     row.classList.remove('bg-red', 'bg-yellow', 'bg-green');
-                    if (newStatus !== originalStatus) {
-                        statusCell.textContent = newStatus;
-                        console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
-                        updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
-                    }
                 } else {
+                    // Default status handling
+                    newStatus = originalStatus;
                     row.classList.remove('text-danger', 'bg-red', 'bg-yellow', 'bg-green');
-                    if (newStatus !== originalStatus) {
-                        statusCell.textContent = newStatus;
-                        console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
-                        updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
-                    }
                 }
 
-                // Update the background color based on the new status if it's not 'Tamat Tempoh Waranti'
-                if (newStatus !== 'Tamat Tempoh Waranti') {
-                    switch (newStatus) {
-                        case 'Projek Batal':
-                            row.classList.add('bg-yellow');
-                            break;
-                        default:
-                            row.classList.remove('bg-yellow', 'bg-red');
-                    }
+                // Check and handle "Projek Batal" status
+                if (originalStatus === 'Projek Batal') {
+                    newStatus = 'Projek Batal';
+                    row.classList.add('bg-yellow');
+                    row.classList.remove('bg-red', 'text-danger', 'bg-green');
+                }
+
+                // Update the status only if it has changed
+                if (newStatus !== originalStatus) {
+                    statusCell.textContent = newStatus;
+                    console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
+                    updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
                 }
             });
         }
@@ -318,16 +308,34 @@
             });
         }
 
-        // Call updateTableStyles on page load
+        // Function to handle periodic updates
+        function startPeriodicUpdates() {
+            const interval = 1; // 1 minute in milliseconds
+            const lastUpdate = localStorage.getItem('lastUpdate');
+            const now = Date.now();
+
+            if (!lastUpdate || (now - lastUpdate) > interval) {
+                updateTableStyles();
+                localStorage.setItem('lastUpdate', now);
+            }
+
+            // Set up the interval to call updateTableStyles periodically
+            setInterval(() => {
+                updateTableStyles();
+                localStorage.setItem('lastUpdate', Date.now());
+            }, interval);
+        }
+
+        // Call startPeriodicUpdates on page load
         document.addEventListener('DOMContentLoaded', function () {
-            updateTableStyles();
+            startPeriodicUpdates();
         });
 
     </script>
 </head>
 
 <body>
-    <h1>MUKA SUPERADMIN</h1>
+    <h1>LAMAN SUPERADMIN</h1>
     <!-- Display all reports in a single line with specified colors -->
     <div class="container-fluid mt-4 d-flex justify-content-center">
         <div class="row w-100 justify-content-center">
@@ -446,13 +454,17 @@
                         </form>
                     </td>
                     <td>
-                        <button
-                            onclick="confirmAndRedirect('<?= site_url('projek/batal?NoProjek=' . urlencode($projekItem->NoProjek)) ?>')"
-                            class="btn btn-primary" <?php if (in_array($projekItem->StatusProjek, ['Tamat Tempoh Waranti', 'Projek Batal']))
+                        <form action="<?= site_url('projek/batal') ?>" method="get"
+                            onsubmit="return confirm('Are you sure you want to cancel this project?');"
+                            style="display: inline;">
+                            <input type="hidden" name="NoProjek" value="<?= urlencode($projekItem->NoProjek) ?>" />
+                            <button type="submit" class="btn btn-primary" <?php if (in_array($projekItem->StatusProjek, ['Tamat Tempoh Waranti', 'Projek Batal']))
                                 echo 'disabled'; ?>>
-                            BATAL PROJEK
-                        </button>
+                                Batal Projek
+                            </button>
+                        </form>
                     </td>
+
                 </tr>
             </tbody>
         <?php endforeach ?>

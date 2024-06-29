@@ -77,10 +77,29 @@
         .tambah-projek-button:hover {
             background-color: #0056b3;
         }
+
+        .back-button {
+            background-color: white;
+            color: black;
+            padding: 10px 15px;
+            border: 1px solid black;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background-color: #000000;
+            color: white;
+            border-color: #000000;
+        }
     </style>
 </head>
 
 <body>
+    <button class="back-button" onclick="window.location.href='index'">Back</button>
     <h1>SETUP SUPERADMIN</h1>
     <table border="1">
         <thead>
@@ -92,7 +111,6 @@
                 <th>No Telefon Superadmin</th>
                 <th>Emel Superadmin</th>
                 <th>Kemaskini</th>
-                <th>Padam</th>
             </tr>
         </thead>
         <?php $no = 1;
@@ -106,16 +124,9 @@
                     <td><?= $sa['NoTelSA'] ?></td>
                     <td><?= $sa['EmelSA'] ?></td>
                     <td>
-                        <button data-toggle="modal" data-target="#edit<?= $sa['IdSA']?>"
-                            class="btn btn-primary">
+                        <button data-toggle="modal" data-target="#edit<?= $sa['IdSA'] ?>" class="btn btn-primary">
                             Kemaskini
                         </button>
-                    </td>
-                    <td>
-                        <form action="<?= base_url('projek/deleteSA/' . $sa['IdSA']) ?>" method="post"
-                            onsubmit="return confirm('Adakah anda ingin membuang data ini?')">
-                            <button type="submit">Padam</button>
-                        </form>
                     </td>
                 </tr>
             </tbody>
@@ -143,20 +154,17 @@
                             </div>
                             <div class="form-group">
                                 <label>No Kad Pengenalan Superadmin:</label><br>
-                                <input type="text" name="noKPSA" class="form-control"
-                                    value="<?= $sa['NoKP_SA'] ?>">
+                                <input type="text" name="noKPSA" class="form-control" value="<?= $sa['NoKP_SA'] ?>">
                                 <?= form_error('noKPSA', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
                                 <label>No Telefon Superadmin:</label><br>
-                                <input type="text" name="noTelSA" class="form-control"
-                                    value="<?= $sa['NoTelSA'] ?>">
+                                <input type="text" name="noTelSA" class="form-control" value="<?= $sa['NoTelSA'] ?>">
                                 <?= form_error('noTelSA', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
                                 <label>Emel Superadmin:</label><br>
-                                <input type="text" name="emelSA" class="form-control"
-                                    value="<?= $sa['EmelSA'] ?>">
+                                <input type="text" name="emelSA" class="form-control" value="<?= $sa['EmelSA'] ?>">
                                 <?= form_error('emelSA', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <!-- Add other form fields as needed -->

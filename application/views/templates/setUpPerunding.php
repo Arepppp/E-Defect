@@ -77,10 +77,29 @@
         .tambah-projek-button:hover {
             background-color: #0056b3;
         }
+
+        .back-button {
+            background-color: white;
+            color: black;
+            padding: 10px 15px;
+            border: 1px solid black;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background-color: #000000;
+            color: white;
+            border-color: #000000;
+        }
     </style>
 </head>
 
 <body>
+    <button class="back-button" onclick="window.location.href='index'">Back</button>
     <h1>SETUP PERUNDING</h1>
     <table border="1">
         <thead>
@@ -118,7 +137,7 @@
                     <td>
                         <form action="<?= base_url('projek/deletePerunding/' . $perunding['IDPERUNDING']) ?>" method="post"
                             onsubmit="return confirm('Adakah anda ingin membuang data ini?')">
-                            <button type="submit">Padam</button>
+                            <button type="submit" class="btn btn-danger">Padam</button>
                         </form>
                     </td>
                 </tr>
@@ -191,7 +210,7 @@
             </div>
         </div>
     <?php endforeach ?>
-    
+
     <?php foreach ($perunding_list as $perunding): ?>
         <div class="modal fade" id="tambah<?= $perunding['IDPERUNDING'] ?>">
             <div class="modal-dialog" role="document">
@@ -211,7 +230,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Alamat:</label><br>
-                                <input type="text" name="alamat" class="form-control" >
+                                <input type="text" name="alamat" class="form-control">
                                 <?= form_error('alamat', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">

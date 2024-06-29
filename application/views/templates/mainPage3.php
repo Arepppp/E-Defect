@@ -155,38 +155,39 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            <?php foreach ($aduan as $aduanItem): ?>
-                $('#jenisAduan<?= $aduanItem->NoAduan ?>').change(function () {
-                    var kodkerosakan = $(this).val();
-                    if (kodkerosakan != '') {
-                        $.ajax({
-                            url: "<?= base_url(); ?>aduan/get_details",
-                            method: "POST",
-                            data: { kodkerosakan: kodkerosakan },
-                            dataType: "json",
-                            success: function (data) {
-                                $('#detailAduan<?= $aduanItem->NoAduan ?>').html('<option value="">Pilih Maklumat Kerosakan</option>');
-                                $.each(data, function (key, value) {
-                                    $('#detailAduan<?= $aduanItem->NoAduan ?>').append('<option value="' + value.KODDETAIL + '">' + value.KETERANGANDETAIL + '</option>');
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                console.log('AJAX Error:', error);
-                            }
-                        });
-                    } else {
-                        $('#detailAduan<?= $aduanItem->NoAduan ?>').html('<option value="">Pilih Maklumat Kerosakan</option>');
-                    }
-                });
-            <?php endforeach; ?>
+            // Update detailAduan when jenisKerosakan changes
+            $(document).on('change', '[id^=jenisKerosakan]', function () {
+                var kodkerosakan = $(this).val();
+                var modalId = $(this).attr('id');
+                var detailAduanId = modalId.replace('jenisKerosakan', 'detailAduan');
+
+                if (kodkerosakan != '') {
+                    $.ajax({
+                        url: "<?= base_url(); ?>aduan/get_details",
+                        method: "POST",
+                        data: { kodkerosakan: kodkerosakan },
+                        dataType: "json",
+                        success: function (data) {
+                            $('#' + detailAduanId).html('<option value="">Pilih Maklumat Kerosakan</option>');
+                            $.each(data, function (key, value) {
+                                $('#' + detailAduanId).append('<option value="' + value.KODDETAIL + '">' + value.KETERANGANDETAIL + '</option>');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.log('AJAX Error:', error);
+                        }
+                    });
+                } else {
+                    $('#' + detailAduanId).html('<option value="">Pilih Maklumat Kerosakan</option>');
+                }
+            });
         });
     </script>
-
 
 </head>
 
 <body>
-    <h1>MUKA ADUAN ADMIN PUSAT TANGGUNGJAWAB</h1>
+    <h1>LAMAN ADUAN ADMIN PUSAT TANGGUNGJAWAB</h1>
     <!-- Total Reports -->
     <div class="container-fluid mt-4 d-flex justify-content-center">
         <div class="row w-100 justify-content-center">
@@ -369,7 +370,7 @@
                         </td>
                         <td><button data-toggle="modal" data-target="#edit<?= $aduanItem->NoAduan ?>">Kemaskini</button></td>
                         <td>
-                            <form action="<?= base_url('aduan/delete/' . $aduanItem->NoAduan) ?>" method="post"
+                            <form action="<?= base_url('aduan/delete2/' . $aduanItem->NoAduan) ?>" method="post"
                                 onsubmit="return confirm('Adakah anda ingin membuang data ini?')">
                                 <button type="submit">Padam</button>
                             </form>
@@ -458,7 +459,9 @@
     </table>
 
     <!-- Modal -->
-    <?php foreach ($aduan as $aduanItem): ?>
+    <?php foreach ($aduan as $aduanItem):
+        $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($aduanItem->KODKEROSKAN);
+        $keteranganDetail = $this->aduan_model->getKeteranganDetailName($aduanItem->KODDETAIL); ?>
         <div class="modal fade" id="edit<?= $aduanItem->NoAduan ?>">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -474,26 +477,6 @@
                                 <label>No Aduan:</label><br>
                                 <input type="text" name="noAduan" class="form-control" value="<?= $aduanItem->NoAduan ?>"
                                     readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>Jenis Kerosakan:</label><br>
-                                <select name="jenisAduan" id="jenisAduan<?= $aduanItem->NoAduan ?>" class="form-control">
-                                    <option value="">Pilih Jenis Kerosakan</option>
-                                    <?php foreach ($kerosakan_list as $kerosakan): ?>
-                                        <option value="<?= $kerosakan['KODKEROSKAN']; ?>"
-                                            <?= ($aduanItem->JenisAduan == $kerosakan['KODKEROSKAN']) ? 'selected' : '' ?>>
-                                            <?= $kerosakan['JENISKEROSAKAN']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <?= form_error('jenisAduan', '<div class="text-small text-danger">', '</div>'); ?>
-                            </div>
-                            <div class="form-group">
-                                <label>Maklumat Kerosakan:</label><br>
-                                <select name="detailAduan" id="detailAduan<?= $aduanItem->NoAduan ?>" class="form-control">
-                                    <option value="">Pilih Maklumat Kerosakan</option>
-                                </select>
-                                <?= form_error('detailAduan', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
                                 <label>Tajuk Aduan:</label><br>

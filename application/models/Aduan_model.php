@@ -6,16 +6,30 @@ class Aduan_model extends CI_Model
     // Get aduan from specific projects
     public function get_aduan_from_projek($projekid)
     {
-        $this->db->select('*');
-        if (is_array($projekid)) {
+        // Check if $projekid is an array and not empty
+        if (is_array($projekid) && !empty($projekid)) {
+            // Use where_in for array of values
             $this->db->where_in('NoProjek', $projekid);
-        } else {
+        } else if (!empty($projekid)) {
+            // Handle single value (string or integer) properly
             $this->db->where('NoProjek', $projekid);
+        } else {
+            // Handle cases where $projekid is empty or invalid
+            // Optionally, you can log an error or handle it accordingly
+            log_message('error', 'Invalid or empty $projekid provided to get_aduan_from_projek method.');
+            return []; // Return an empty array or handle as needed
         }
+
+        // Apply ordering
         $this->db->order_by('NoAduan', 'DESC');
+
+        // Execute the query
         $query = $this->db->get('aduan');
+
+        // Return the results
         return $query->result();
     }
+
 
     // Get aduan from specific projects on a particular date
     public function get_aduan_from_date($projekid, $date)

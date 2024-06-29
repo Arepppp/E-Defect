@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html>
 
 <head>
     <title>Login Page</title>
@@ -8,7 +7,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -36,6 +35,7 @@
             display: inline-block;
             border: 1px solid #ccc;
             box-sizing: border-box;
+            border-radius: 4px;
         }
 
         button {
@@ -46,6 +46,7 @@
             border: none;
             cursor: pointer;
             width: 100%;
+            border-radius: 4px;
         }
 
         button:hover {

@@ -49,17 +49,6 @@
             margin-bottom: 15px;
         }
 
-        input[type="text"],
-        input[type="password"],
-        input[type="date"],
-        input[type="submit"],
-        input[type="reset"] {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
-
         button {
             background-color: #007bff;
             color: #ffffff;
@@ -154,7 +143,7 @@
 
 <body>
     <button class="back-button" onclick="window.location.href='index'">Back</button>
-    <h1>MUKA ADUAN SUPERADMIN</h1>
+    <h1>LAMAN ADUAN SUPERADMIN</h1>
     <!-- Display all reports in a single line with specified colors -->
     <div class="container-fluid mt-4 d-flex justify-content-center">
         <div class="row w-100 justify-content-center">

@@ -111,7 +111,7 @@
 
 <body>
     <button class="back-button"
-        onclick="window.location.href='http://localhost:8080/e-DefectTest/juruteknik/index'">Back</button>
+        onclick="window.location.href='http://localhost:8080/e-DefectTest/juruteknik/index'">Kembali</button>
     <div class="details-container">
         <h2>Details for Aduan No <?= $details['aduan']->NoAduan ?></h2>
 

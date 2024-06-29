@@ -152,7 +152,7 @@ class Projek_model extends CI_Model
     {
         $this->db->set('StatusProjek', 'Projek Batal');
         $this->db->where('NoProjek', $NoProjek);
-        $this->db->update('Projek');
+        $this->db->update('projek');
     }
 
     public function update_status($NoProjek, $StatusProjek)

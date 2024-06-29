@@ -142,7 +142,7 @@
 </head>
 
 <body>
-    <h1>MUKA ADUAN JURUTEKNIK</h1>
+    <h1>LAMAN ADUAN JURUTEKNIK</h1>
     <div class="container-fluid mt-4 d-flex justify-content-center">
         <div class="row w-100 justify-content-center">
             <!-- Total Reports -->
@@ -322,7 +322,9 @@
     </table>
 
     <!-- Modal -->
-    <?php foreach ($aduan as $aduanItem): ?>
+    <?php foreach ($aduan as $aduanItem):
+        $jenisKerosakan = $this->aduan_model->getJenisKerosakanName($aduanItem->KODKEROSKAN);
+        $keteranganDetail = $this->aduan_model->getKeteranganDetailName($aduanItem->KODDETAIL); ?>
         <div class="modal fade" id="edit<?= $aduanItem->NoAduan ?>">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -337,18 +339,6 @@
                             <div class="form-group">
                                 <label>No Aduan:</label><br>
                                 <input type="text" name="noAduan" class="form-control" value="<?= $aduanItem->NoAduan ?>">
-                            </div>
-                            <div class="form-group">
-                                <label>Jenis Aduan:</label><br>
-                                <input type="text" name="jenisAduan" class="form-control"
-                                    value="<?= $aduanItem->KODKEROSKAN ?>">
-                                <?= form_error('jenisAduan', '<div class="text-small text-danger">', '</div>'); ?>
-                            </div>
-                            <div class="form-group">
-                                <label>Jenis Kerosakan:</label><br>
-                                <input type="text" name="jenisKerosakan" class="form-control"
-                                    value="<?= $aduanItem->KODDETAIL ?>">
-                                <?= form_error('jenisKerosakan', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
                                 <label>Tajuk Aduan:</label><br>
@@ -367,9 +357,7 @@
                                 <select name="statusAduan" class="form-control">
                                     <option value="Sedang Disemak" <?= $aduanItem->StatusAduan == 'Sedang Disemak' ? 'selected' : '' ?>>Sedang Disemak</option>
                                     <option value="Aduan Disahkan" <?= $aduanItem->StatusAduan == 'Aduan Disahkan' ? 'selected' : '' ?>>Aduan Disahkan</option>
-                                    <option value="Sedang Dibaiki" <?= $aduanItem->StatusAduan == 'Sedang Dibaiki' ? 'selected' : '' ?>>Sedang Dibaiki</option>
-                                    <option value="Siap Dibaiki" <?= $aduanItem->StatusAduan == 'Siap Dibaiki' ? 'selected' : '' ?>>Siap Dibaiki</option>
-                                </select>
+                                    <option value="Sedang Dibaiki" <?= $aduanItem->StatusAduan == 'Sedang Dibaiki' ? 'selected' : '' ?>>Sedang Dibaiki</option> </select>
                                 <?= form_error('statusAduan', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
 

@@ -7,9 +7,9 @@
     <title>Set Up Juruteknik</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         h1 {
@@ -77,11 +77,30 @@
         .tambah-projek-button:hover {
             background-color: #0056b3;
         }
+
+        .back-button {
+            background-color: white;
+            color: black;
+            padding: 10px 15px;
+            border: 1px solid black;
+            cursor: pointer;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+
+        .back-button:hover {
+            background-color: #000000;
+            color: white;
+            border-color: #000000;
+        }
     </style>
 </head>
 
 <body>
-    <h1>SETUP JURUTKENIK</h1>
+    <button class="back-button" onclick="window.location.href='index'">Back</button>
+    <h1>SETUP JURUTEKNIK</h1>
     <table border="1">
         <thead>
             <tr class="text-center">
@@ -106,14 +125,14 @@
                     <td><?= $jt['NoTelJT'] ?></td>
                     <td><?= $jt['EmelJT'] ?></td>
                     <td>
-                        <button data-toggle="modal" data-target="#edit<?= $jt['IdJT'] ?>" class="btn btn-primary">
+                        <button data-bs-toggle="modal" data-bs-target="#edit<?= $jt['IdJT'] ?>" class="btn btn-primary">
                             Kemaskini
                         </button>
                     </td>
                     <td>
                         <form action="<?= base_url('projek/deleteJT/' . $jt['IdJT']) ?>" method="post"
                             onsubmit="return confirm('Adakah anda ingin membuang data ini?')">
-                            <button type="submit">Padam</button>
+                            <button type="submit" class="btn btn-danger">Padam</button>
                         </form>
                     </td>
                 </tr>
@@ -121,9 +140,10 @@
         <?php endforeach; ?>
     </table>
 
-    <button data-toggle="modal" data-target="#tambah<?= $jt['IdJT'] ?>" class="btn btn-primary">
+    <button data-bs-toggle="modal" data-bs-target="#tambah<?= $jt['IdJT'] ?>" class="btn btn-primary">
         Tambah Juruteknik
     </button>
+
 
     <!-- Modal -->
     <?php foreach ($jt_list as $jt): ?>
