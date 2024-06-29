@@ -8,7 +8,7 @@
     <title>Muka Aduan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -108,23 +108,19 @@
         table {
             width: 80%;
             margin: 20px auto;
-            /* Center the table on the page */
             border-collapse: collapse;
             background-color: #ffffff;
-            /* White background for the table */
         }
 
         th,
         td {
             padding: 12px;
             border: 1px solid #dddddd;
-            /* Light gray border */
             text-align: left;
         }
 
         th {
             background-color: #f2f2f2;
-            /* Light gray background for table header */
         }
 
         .text-center {
@@ -133,15 +129,12 @@
 
         .text-danger {
             background-color: #f8d7da;
-            /* Light red background color */
             color: #721c24;
-            /* Dark red text color */
         }
 
         /* Modal Styles */
         .modal-content {
             background-color: #ffffff;
-            /* White background for the modal content */
         }
 
         /* Form Styles */
@@ -163,7 +156,6 @@
         /* Button Styles */
         button {
             background-color: #007bff;
-            /* Bootstrap primary color */
             color: #ffffff;
             padding: 10px 15px;
             border: none;
@@ -175,7 +167,6 @@
 
         button:hover {
             background-color: #0056b3;
-            /* Darker shade on hover */
         }
 
         .tambah-projek-button-container {
@@ -193,7 +184,6 @@
 
         .print-button {
             background-color: #28a745;
-            /* Green color */
             color: white;
             padding: 10px 20px;
             border: none;
@@ -205,12 +195,10 @@
 
         .print-button:hover {
             background-color: #218838;
-            /* Darker green on hover */
         }
 
         .logout-button {
             background-color: #dc3545;
-            /* Red color */
             color: white;
             padding: 10px 20px;
             border: none;
@@ -222,7 +210,6 @@
 
         .logout-button:hover {
             background-color: #c82333;
-            /* Darker red on hover */
         }
 
         .bg-blue {
@@ -302,21 +289,47 @@
             });
         }
 
-        function updateStatusInDatabase(projectId, newStatus) {
-            $.ajax({
-                url: 'update_status.php',
-                type: 'POST',
-                data: {
-                    NoProjek: projectId,
-                    StatusProjek: newStatus
-                },
-                success: function (response) {
-                    console.log(response);
-                },
-                error: function (xhr, status, error) {
-                    console.error(xhr.responseText);
-                }
-            });
+        function updateStatusAndDatabase(NoProjek, currentStatus) {
+            console.log('Updating status for NoProjek:', NoProjek, 'Current status:', currentStatus);
+
+            // Update the view based on expiry date
+            var today = new Date();
+            var expiryDate = new Date($('#tarikhTamatWaranti_' + NoProjek).text());
+
+            var newStatus = currentStatus; // Initialize newStatus with current status
+
+            if (expiryDate < today && currentStatus !== 'Tamat Tempoh Waranti') {
+                // Set the status to Tamat Tempoh Waranti if expired
+                console.log('Project expired, updating status to Tamat Tempoh Waranti');
+                $('#statusProjek_' + NoProjek).text('Tamat Tempoh Waranti');
+                newStatus = 'Tamat Tempoh Waranti'; // Update newStatus variable
+            } else if (expiryDate >= today && currentStatus === 'Tamat Tempoh Waranti') {
+                // If not expired but status set to Tamat Tempoh Waranti, revert it
+                console.log('Project status back to Aktif');
+                $('#statusProjek_' + NoProjek).text('Aktif');
+                newStatus = 'Aktif'; // Update newStatus variable
+            }
+
+            // Update database via AJAX if status changed
+            if (currentStatus !== newStatus) {
+                console.log('Sending AJAX request to update status to:', newStatus);
+                $.ajax({
+                    type: 'POST',
+                    url: '<?= base_url('projek/update_status_ajax') ?>',
+                    data: {
+                        NoProjek: NoProjek,
+                        newStatus: newStatus
+                    },
+                    success: function (response) {
+                        console.log('Status updated successfully');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error updating status:', error);
+                    }
+                });
+            } else {
+                console.log('No status change detected, skipping database update');
+            }
         }
 
         // Call updateTableStyles on page load
@@ -460,9 +473,9 @@
     </table>
 
     <ul class="navbar">
-        <li><a href="index2">Projek Aktif</a></li>
-        <li><a href="index" class="active">Semua Projek</a></li>
-        <li><a href="index3">Projek Tamat Tempoh</a></li>
+        <li><a href="http://localhost:8080/e-DefectTest/projek/index2">Projek Aktif</a></li>
+        <li><a href="http://localhost:8080/e-DefectTest/projek/index" class="active">Semua Projek</a></li>
+        <li><a href="http://localhost:8080/e-DefectTest/projek/index3">Projek Tamat Tempoh</a></li>
     </ul>
 
     <!-- Modal -->
@@ -485,19 +498,6 @@
                                 <?= form_error('namaProjek', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
-                                <label>Status Projek:</label><br>
-                                <select name="statusProjek" class="form-control">
-                                    <option value="Aktif" <?= $projekItem->StatusProjek == 'Aktif' ? 'selected' : '' ?>>
-                                        Aktif
-                                    </option>
-                                    <option value="Tamat Tempoh Waranti" <?= $projekItem->StatusProjek == 'Tamat Tempoh Waranti' ? 'selected' : '' ?>>Tamat Tempoh Waranti</option>
-                                    <option value="Batal" <?= $projekItem->StatusProjek == 'Batal' ? 'selected' : '' ?>>
-                                        Batal
-                                    </option>
-                                </select>
-                                <?= form_error('statusProjek', '<div class="text-small text-danger">', '</div>'); ?>
-                            </div>
-                            <div class="form-group">
                                 <label>Tarikh Mula Waranti:</label><br>
                                 <input type="date" name="tarikhMulaWaranti" class="form-control"
                                     value="<?= $projekItem->TarikhMulaWaranti ?>">
@@ -510,20 +510,17 @@
                                 <?= form_error('tarikhTamatWaranti', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
-                                <label>ID Juruteknik:</label><br>
-                                <input type="text" name="IdJT" class="form-control" value="<?= $projekItem->IdJT ?>">
-                                <?= form_error('IdJT', '<div class="text-small text-danger">', '</div>'); ?>
+                                <label>Id Juruteknik:</label><br>
+                                <input type="text" name="idJT" class="form-control" value="<?= $projekItem->IdJT ?>">
+                                <?= form_error('idJT', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
-                                <label>ID Admin Pusat Tanggungjawab:</label><br>
-                                <input type="text" name="IdAPTJ" class="form-control" value="<?= $projekItem->IdAPTJ ?>">
-                                <?= form_error('IdAPTJ', '<div class="text-small text-danger">', '</div>'); ?>
+                                <label>Id Admin Pusat Tanggungjawab:</label><br>
+                                <input type="text" name="idAPTJ" class="form-control" value="<?= $projekItem->IdAPTJ ?>">
+                                <?= form_error('idAPTJ', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
-                            <!-- Add other form fields as needed -->
-                            <div class="modal-footer">
-                                <button type="submit">HANTAR</button>
-                                <button type="reset">RESET</button>
-                            </div>
+                            <button type="reset" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update</button>
                         </form>
                     </div>
                 </div>

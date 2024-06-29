@@ -49,9 +49,20 @@
             margin: 10px 0;
         }
 
+        .images {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .image-container {
+            width: 48%;
+            text-align: center;
+        }
+
         img {
             vertical-align: middle;
-            height: 400px;
+            max-height: 400px;
             width: auto;
             object-fit: contain;
             border: 2px solid #007bff;
@@ -109,6 +120,27 @@
         $keteranganDetail = $this->aduan_model->getKeteranganDetailName($details['aduan']->KODDETAIL);
         ?>
 
+        <div class="images">
+            <div class="image-container">
+                <label>Gambar Semasa Aduan Dilaporkan:</label>
+                <?php if (!empty($details['aduan']->GambarAduan)): ?>
+                    <?php $gambarAduanBase64 = base64_encode($details['aduan']->GambarAduan); ?>
+                    <img src="data:image/jpeg;base64,<?= $gambarAduanBase64 ?>" alt="Gambar Aduan">
+                <?php else: ?>
+                    <p>No image available</p>
+                <?php endif; ?>
+            </div>
+            <div class="image-container">
+                <label>Gambar Aduan Yang Siap Dibaiki:</label>
+                <?php if (!empty($details['aduan']->GAMBAR_ADUAN_SIAP)): ?>
+                    <?php $gambarAduanSiapBase64 = base64_encode($details['aduan']->GAMBAR_ADUAN_SIAP); ?>
+                    <img src="data:image/jpeg;base64,<?= $gambarAduanSiapBase64 ?>" alt="Gambar Aduan Yang Siap">
+                <?php else: ?>
+                    <p>Aduan belum diselesaikan</p>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <label>Jenis Aduan:</label>
         <p><?= $jenisKerosakan ?></p>
 
@@ -117,27 +149,6 @@
 
         <label>Tajuk Aduan:</label>
         <p><?= $details['aduan']->TajukAduan ?></p>
-
-        <label>Gambar Aduan:</label>
-        <?php if (!empty($details['aduan']->GambarAduan)): ?>
-            <?php
-            $gambarAduanBase64 = base64_encode($details['aduan']->GambarAduan);
-            ?>
-            <img src="data:image/jpeg;base64,<?= $gambarAduanBase64 ?>" alt="Gambar Aduan">
-        <?php else: ?>
-            <p>No image available</p>
-        <?php endif; ?>
-
-        <label>Gambar Aduan Yang Siap:</label>
-        <?php if (!empty($details['aduan']->GAMBAR_ADUAN_SIAP)): ?>
-            <?php
-            $gambarAduanSiapBase64 = base64_encode($details['aduan']->GAMBAR_ADUAN_SIAP);
-            ?>
-            <img src="data:image/jpeg;base64,<?= $gambarAduanSiapBase64 ?>" alt="Gambar Aduan Yang Siap">
-        <?php else: ?>
-            <p>No image available</p>
-        <?php endif; ?>
-
 
         <label>Keterangan:</label>
         <p><?= $details['aduan']->Keterangan ?></p>

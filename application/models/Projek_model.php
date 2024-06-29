@@ -91,6 +91,27 @@ class Projek_model extends CI_Model
         $this->db->insert($table, $data);
     }
 
+    public function update_projek($NoProjek, $data)
+    {
+        $this->db->where('NoProjek', $NoProjek);
+        return $this->db->update('projek', $data);
+    }
+
+    public function update_projek_status($NoProjek, $data)
+    {
+        $this->db->where('NoProjek', $NoProjek);
+        $result = $this->db->update('projek', $data);
+
+        // Log database update query and result
+        if ($result) {
+            error_log('Database update successful. NoProjek: ' . $NoProjek . ', data: ' . json_encode($data));
+        } else {
+            error_log('Database update failed. NoProjek: ' . $NoProjek . ', data: ' . json_encode($data));
+        }
+
+        return $result;
+    }
+
     public function update_SA($data, $table)
     {
         $this->db->where('IdSA', $data['IdSA']);

@@ -407,6 +407,84 @@ class Projek extends CI_Controller
         return null;
     }
 
+    public function edit($NoProjek)
+    {
+        $this->load->library('form_validation');
+
+        // Set validation rules
+        $this->form_validation->set_rules('namaProjek', 'Nama Projek', 'required');
+        $this->form_validation->set_rules('tarikhMulaWaranti', 'Tarikh Mula Waranti', 'required');
+        $this->form_validation->set_rules('tarikhTamatWaranti', 'Tarikh Tamat Waranti', 'required');
+        $this->form_validation->set_rules('idJT', 'Id Juruteknik', 'required');
+        $this->form_validation->set_rules('idAPTJ', 'Id Admin Pusat Tanggungjawab', 'required');
+
+        if ($this->form_validation->run() == FALSE) {
+            // Validation failed, load the form again with error messages
+            $data['projek'] = $this->projek_model->get_projek($NoProjek);
+            $this->load->view('projek/edit', $data);
+        } else {
+            // Validation passed, update the project in the database
+            $data = array(
+                'NamaProjek' => $this->input->post('namaProjek'),
+                'StatusProjek' => $this->input->post('statusProjek'),
+                'TarikhMulaWaranti' => $this->input->post('tarikhMulaWaranti'),
+                'TarikhTamatWaranti' => $this->input->post('tarikhTamatWaranti'),
+                'IdJT' => $this->input->post('idJT'),
+                'IdAPTJ' => $this->input->post('idAPTJ'),
+            );
+
+            $this->projek_model->update_projek($NoProjek, $data);
+
+            // Redirect to a success page or the list of projects
+            redirect('projek');
+        }
+    }
+
+    public function update_status_ajax()
+    {
+        $NoProjek = $this->input->post('NoProjek');
+        $newStatus = $this->input->post('newStatus');
+
+        // Log received data
+        error_log('Received update_status_ajax request. NoProjek: ' . $NoProjek . ', newStatus: ' . $newStatus);
+
+        // Validate input if necessary
+        if (!isset($NoProjek) || !isset($newStatus)) {
+            // Handle validation error
+            error_log('Invalid input data');
+            echo json_encode(array('success' => false, 'message' => 'Invalid input data'));
+            return;
+        }
+
+        // Update the status in the database
+        $data = array(
+            'StatusProjek' => $newStatus
+        );
+
+        // Log database update attempt
+        error_log('Attempting to update database. NoProjek: ' . $NoProjek . ', newStatus: ' . $newStatus);
+
+        // Load the model
+        $this->load->model('projek_model');
+
+        // Call the model method to update status
+        $result = $this->projek_model->update_projek_status($NoProjek, $data);
+
+        // Check the result of the update
+        if ($result) {
+            // Log success message
+            error_log('Status updated successfully. NoProjek: ' . $NoProjek . ', newStatus: ' . $newStatus);
+
+            // Respond with success
+            echo json_encode(array('success' => true, 'message' => 'Status updated successfully'));
+        } else {
+            // Log failure message
+            error_log('Failed to update status. NoProjek: ' . $NoProjek . ', newStatus: ' . $newStatus);
+
+            // Respond with failure
+            echo json_encode(array('success' => false, 'message' => 'Failed to update status'));
+        }
+    }
     public function editSA($IdSA)
     {
         $data = array(
