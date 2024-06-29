@@ -232,6 +232,7 @@
             color: black !important;
         }
     </style>
+    
     <script>
         function printReport() {
             window.print();
@@ -262,12 +263,27 @@
                     newStatus = "Tamat Tempoh Waranti";
                     row.classList.add('bg-red');
                     row.classList.remove('text-danger', 'bg-yellow', 'bg-green');
+                    if (newStatus !== originalStatus) {
+                        statusCell.textContent = newStatus;
+                        console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
+                        updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
+                    }
                 } else if (expiryDate < today) {
                     newStatus = "Aktif";
                     row.classList.add('text-danger');
                     row.classList.remove('bg-red', 'bg-yellow', 'bg-green');
+                    if (newStatus !== originalStatus) {
+                        statusCell.textContent = newStatus;
+                        console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
+                        updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
+                    }
                 } else {
                     row.classList.remove('text-danger', 'bg-red', 'bg-yellow', 'bg-green');
+                    if (newStatus !== originalStatus) {
+                        statusCell.textContent = newStatus;
+                        console.log(`Updating status for NoProjek: ${row.cells[1].textContent.trim()} to ${newStatus}`);
+                        updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
+                    }
                 }
 
                 // Update the background color based on the new status if it's not 'Tamat Tempoh Waranti'
@@ -280,56 +296,26 @@
                             row.classList.remove('bg-yellow', 'bg-red');
                     }
                 }
-
-                // Update the status cell text if the status has changed
-                if (newStatus !== originalStatus) {
-                    statusCell.textContent = newStatus;
-                    updateStatusInDatabase(row.cells[1].textContent.trim(), newStatus);
-                }
             });
         }
 
-        function updateStatusAndDatabase(NoProjek, currentStatus) {
-            console.log('Updating status for NoProjek:', NoProjek, 'Current status:', currentStatus);
-
-            // Update the view based on expiry date
-            var today = new Date();
-            var expiryDate = new Date($('#tarikhTamatWaranti_' + NoProjek).text());
-
-            var newStatus = currentStatus; // Initialize newStatus with current status
-
-            if (expiryDate < today && currentStatus !== 'Tamat Tempoh Waranti') {
-                // Set the status to Tamat Tempoh Waranti if expired
-                console.log('Project expired, updating status to Tamat Tempoh Waranti');
-                $('#statusProjek_' + NoProjek).text('Tamat Tempoh Waranti');
-                newStatus = 'Tamat Tempoh Waranti'; // Update newStatus variable
-            } else if (expiryDate >= today && currentStatus === 'Tamat Tempoh Waranti') {
-                // If not expired but status set to Tamat Tempoh Waranti, revert it
-                console.log('Project status back to Aktif');
-                $('#statusProjek_' + NoProjek).text('Aktif');
-                newStatus = 'Aktif'; // Update newStatus variable
-            }
-
-            // Update database via AJAX if status changed
-            if (currentStatus !== newStatus) {
-                console.log('Sending AJAX request to update status to:', newStatus);
-                $.ajax({
-                    type: 'POST',
-                    url: '<?= base_url('projek/update_status_ajax') ?>',
-                    data: {
-                        NoProjek: NoProjek,
-                        newStatus: newStatus
-                    },
-                    success: function (response) {
-                        console.log('Status updated successfully');
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error updating status:', error);
-                    }
-                });
-            } else {
-                console.log('No status change detected, skipping database update');
-            }
+        // Function to update the status in the database via AJAX
+        function updateStatusInDatabase(NoProjek, newStatus) {
+            console.log(`Sending AJAX request to update status for NoProjek: ${NoProjek} to ${newStatus}`);
+            $.ajax({
+                type: 'POST',
+                url: '<?= base_url('projek/update_status_ajax') ?>',
+                data: {
+                    NoProjek: NoProjek,
+                    newStatus: newStatus
+                },
+                success: function (response) {
+                    console.log(`Status updated successfully for NoProjek: ${NoProjek} to ${newStatus}`);
+                },
+                error: function (xhr, status, error) {
+                    console.error(`Error updating status for NoProjek: ${NoProjek}`, error);
+                }
+            });
         }
 
         // Call updateTableStyles on page load
@@ -496,6 +482,18 @@
                                 <input type="text" name="namaProjek" class="form-control"
                                     value="<?= $projekItem->NamaProjek ?>">
                                 <?= form_error('namaProjek', '<div class="text-small text-danger">', '</div>'); ?>
+                            </div>
+                            <div class="form-group">
+                                <label>Status Projek:</label><br>
+                                <select name="statusProjek" class="form-control">
+                                    <option value="Aktif" <?= $projekItem->StatusProjek == 'Aktif' ? 'selected' : '' ?>>
+                                        Aktif
+                                    </option>
+                                    <option value="Tamat Tempoh Waranti" <?= $projekItem->StatusProjek == 'Tamat Tempoh Waranti' ? 'selected' : '' ?>>Tamat Tempoh Waranti</option>
+                                    Batal
+                                    </option>
+                                </select>
+                                <?= form_error('statusProjek', '<div class="text-small text-danger">', '</div>'); ?>
                             </div>
                             <div class="form-group">
                                 <label>Tarikh Mula Waranti:</label><br>

@@ -485,6 +485,7 @@ class Projek extends CI_Controller
             echo json_encode(array('success' => false, 'message' => 'Failed to update status'));
         }
     }
+    
     public function editSA($IdSA)
     {
         $data = array(
