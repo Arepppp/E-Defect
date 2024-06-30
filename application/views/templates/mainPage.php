@@ -343,11 +343,12 @@
             <div class="col-lg-3 col-6">
                 <a href="<?= site_url('projek/index7') ?>">
                     <div class="small-box bg-blue text-center">
+                        Aduan Keseluruhan:
                         <div class="inner">
                             <div class="icon">
                                 <i class="fas fa-file-alt"></i>
-                                Jumlah Aduan Keseluruhan:
-                                <h3><?= $this->session->userdata('count_total') ?></h3>
+
+                                <!-- <h3><?= $this->session->userdata('count_total') ?></h3> -->
                             </div>
                         </div>
                     </div>
@@ -357,12 +358,14 @@
             <div class="col-lg-3 col-6">
                 <a href="<?= site_url('projek/index4') ?>">
                     <div class="small-box bg-yellow text-center">
+                        Aduan Keseluruhan Hari Ini:
                         <div class="inner">
                             <div class="icon">
                                 <i class="fas fa-file"></i>
-                                Jumlah Aduan Keseluruhan Hari Ini:
+
                             </div>
-                            <h3><?= $this->session->userdata('count_today') ?> </h3>
+                            <!-- <h3>
+                                <?= $this->session->userdata('count_today') ?> </h3> -->
                         </div>
                     </div>
                 </a>
@@ -371,12 +374,13 @@
             <div class="col-lg-3 col-6">
                 <a href="<?= site_url('projek/index5') ?>">
                     <div class="small-box bg-red text-center">
+                        Aduan Belum Siap:
                         <div class="inner">
                             <div class="icon">
                                 <i class="fas fa-exclamation-triangle"></i>
-                                Jumlah Aduan Belum Siap:
+
                             </div>
-                            <h3><?= $this->session->userdata('count_belum_siap') ?></h3>
+                            <!-- <h3><?= $this->session->userdata('count_belum_siap') ?></h3> -->
                         </div>
                     </div>
                 </a>
@@ -385,18 +389,22 @@
             <div class="col-lg-3 col-6">
                 <a href="<?= site_url('projek/index6') ?>">
                     <div class="small-box bg-green text-center">
+                        Aduan Siap:
                         <div class="inner">
                             <div class="icon">
                                 <i class="fas fa-check-circle"></i>
-                                Jumlah Aduan Siap:
+
                             </div>
-                            <h3><?= $this->session->userdata('count_siap') ?></h3>
+                            <!--   <h3><?= $this->session->userdata('count_siap') ?></h3> -->
                         </div>
                     </div>
                 </a>
             </div>
         </div>
     </div>
+
+    <br>
+
     <div class="navbar_top">
         <a href="tambah">Tambah Projek</a>
         <a href="setupSA">Setup Superadmin</a>

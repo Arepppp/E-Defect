@@ -152,7 +152,9 @@
                 <a href="<?= site_url('projek/index7') ?>">
                     <div class="small-box bg-blue text-center">
                         <div class="inner">
-                            <p>Jumlah Aduan Keseluruhan: <?= $this->session->userdata('count_total') ?></p>
+                            <p>Jumlah Aduan Keseluruhan:
+                                <!-- <?= $this->session->userdata('count_total') ?>-->
+                            </p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-file-alt"></i>
@@ -165,7 +167,8 @@
                 <a href="<?= site_url('projek/index4') ?>">
                     <div class="small-box bg-yellow text-center">
                         <div class="inner">
-                            <p>Jumlah Aduan Keseluruhan Hari Ini: <?= $this->session->userdata('count_today') ?></p>
+                            <p>Jumlah Aduan Keseluruhan Hari Ini: <!--<?= $this->session->userdata('count_today') ?>-->
+                            </p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-file"></i>
@@ -178,7 +181,7 @@
                 <a href="<?= site_url('projek/index5') ?>">
                     <div class="small-box bg-red text-center">
                         <div class="inner">
-                            <p>Jumlah Aduan Belum Siap: <?= $this->session->userdata('count_belum_siap') ?></p>
+                            <p>Jumlah Aduan Belum Siap: <!--<?= $this->session->userdata('count_belum_siap') ?>--></p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -191,7 +194,7 @@
                 <a href="<?= site_url('projek/index6') ?>">
                     <div class="small-box bg-green text-center">
                         <div class="inner">
-                            <p>Jumlah Aduan Siap: <?= $this->session->userdata('count_siap') ?></p>
+                            <p>Jumlah Aduan Siap: <!--<?= $this->session->userdata('count_siap') ?>--></p>
                         </div>
                         <div class="icon">
                             <i class="fas fa-check-circle"></i>

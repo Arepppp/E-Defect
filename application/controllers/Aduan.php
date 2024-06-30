@@ -174,6 +174,7 @@ class Aduan extends CI_Controller
             'StatusAduan' => "Siap Dibaiki",
             'GAMBAR_ADUAN_SIAP' => $gambarAduanSiapBlob,
             'TARIKH_PANGGIL_KONTRAKTOR' => $this->input->post('TARIKH_PANGGIL_KONTRAKTOR'),
+            'TarikhStatusDikemaskini' => date('Y-m-d H:i:s'),
             'TARIKH_SIAP_BAIKI' => date('Y-m-d H:i:s'),
             'KOMEN_JT' => $this->input->post('KOMEN_JT'),
             'KOMEN_KONTRAKTOR' => $this->input->post('KOMEN_KONTRAKTOR'),
